@@ -1,0 +1,148 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage[utf8]{inputenc} %Spanish input
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[spanish, es-tabla]{babel} % Selecciona el español para palabras introducidas automáticamente, p.ej. "septiembre" en la fecha y especifica que se use la palabra Tabla en vez de Cuadro
+\usepackage{fullpage}
+\usepackage[top=2cm, bottom=4.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage[inline]{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+%
+\usepackage[sorting=none]{biblatex}
+\addbibresource{citas.bib}
+%
+\usepackage{csquotes}
+\usepackage{cellspace}
+\setlength{\cellspacetoplimit}{5pt}
+\setlength{\cellspacebottomlimit}{5pt}
+\usepackage{hhline}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titletoc,tocloft}
+\usepackage{float,subfig}
+\setlength{\cftsubsecindent}{2cm}
+\setlength{\cftsubsubsecindent}{4cm}
+\dottedcontents{section}[1.5em]{}{1.3em}{.6em}
+%\usepackage[nodisplayskipstretch]{setspace}
+%
+\graphicspath{ {./imgs/} } %Drawing the background pic
+\usepackage{tikz}
+\newcommand{\tikzmark}[1]{\tikz[baseline,remember picture] \coordinate (#1) {};}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shadows,arrows.meta} % For adding edges label
+\usetikzlibrary{calc}
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[opacity=.15, inner sep=0pt]
+            at(current page.center){\includegraphics[scale=1.5]{logo-ugr2}};
+    \end{tikzpicture}%
+}
+
+% \numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+% \numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+% \numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+\hypersetup{%
+    colorlinks=true,
+    linkcolor=[rgb]{0.2, 0.3, 0.5},
+    urlcolor=black,
+    citecolor=black,
+    linkbordercolor={0 0 1}
+}
+
+\renewcommand\lstlistingname{Código:}
+\renewcommand\lstlistlistingname{Código:}
+\def\lstlistingautorefname{Brian SS.}
+%
+%
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+%
+\lstset{language=python,basicstyle=\linespread{1.1}\ttfamily\footnotesize,
+    xleftmargin=0.0cm, frame=t, framesep=0.15cm, framerule=0pt, tabsize=4,
+    showspaces=false, showstringspaces=false,showlines=true,
+    keywordstyle=\color{blue}\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    commentstyle=\color{gray}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#}
+}
+%
+\setlength{\parindent}{0.0in}
+\setlength{\parskip}{0.05in}
+%
+%% Edit these as appropriate
+\newcommand\course{Ciencia de Datos e Ingenieria de Computadores}
+\newcommand\hwnumber{1}                  % <-- homework number
+\newcommand\NetIDa{Brian}           % <-- NetID of person #1
+\newcommand\NetIDb{Sena Simons}           % <-- NetID of person #1
+%
+\pagestyle{fancyplain}
+\headheight 35pt
+\lhead{\NetIDa}
+\lhead{\NetIDa\\\NetIDb}                 % <-- Comment this line out for problem sets (make sure you are person #1)
+\chead{\hspace{-2cm}\textbf{\large Extracción de Características}}
+\rhead{\course \\ \today}
+\lfoot{\scriptsize\LaTeX}
+\cfoot{\hyperlink{Indice}{Volver al índice}}
+\rfoot{\small\thepage}
+\headsep 1.5em
+%
+\renewcommand*\contentsname{Índice}
+%
+\author{Brian Sena Simons} % Nombre y apellidos
+%
+\date{\normalsize\today} % Incluye la fecha actual
+%
+\begin{document}
+%
+\begin{titlepage}
+\begin{figure}[H]
+    \vspace{-1.3cm}
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{Etsiit}
+    \end{center}
+\end{figure}
+\vspace{1.3cm}
+\centering
+\normalfont \normalsize
+\textsc{\textbf{Minería de Datos} \\ \vspace{.15cm} Master en Ciencia de Datos e Ingeniería de Computadores \\ \vspace{.15cm} Universidad de Granada} \\ [25pt] % Your university, school and/or department name(s)
+    \horrule{0.5pt} \\[0.4cm] % Thin top horizontal rule
+    \huge Preprocesamiento y Clasificación\\ % The assignment title
+    \horrule{2pt} \\[0.5cm] % Thick bottom horizontal rule
+
+\begin{minipage}{0.4\textwidth}
+    \begin{flushleft}\large
+        \emph{Autores:} \\
+         ----------------------- \\
+        \vspace{.15cm}
+        Brian Sena Simons. \\
+        Miguel Garcia Lopez. \\
+        Álvaro Santana Sánchez. \\ 
+        Ana Fuentes Rodríguez.
+
+    \end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+    \vspace{-2.2cm}
+     \begin{flushright}\large
+         Grupo: \\
+         ----------------------- \\
+         Data Mavericks.
+    \end{flushright}
+\end{minipage}
+\end{titlepage}
+
+
+\hypertarget{Indice}{}
+\tableofcontents
+\newpage
+\section{Introducción.}
+\printbibliography
+\end{document}
