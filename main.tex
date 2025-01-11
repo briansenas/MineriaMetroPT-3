@@ -144,5 +144,55 @@
 \tableofcontents
 \newpage
 \section{Introducción.}
+Se ha realizado un análisis y comparativa entre diferentes modelos para la detección de anomalías y predicción de vida útil restante (RUL por sus siglas en inglés)
+en compresores del sector ferroviario. Para ello, se ha utilizado el conjunto de datos (dataset) ``MetroPT-3''~\cite{MetroPT-3}.
+Está publicado en ``UCI Machine Learning Repository''~\cite{UCIMLR} y, según la descripción, MetroPT-3~\cite{MetroPT-3} es un conjunto de datos multivariantes de series temporales. Los datos provienen de sensores analógicos y digitales 
+instalados en un compresor de tren, que miden 15 señales como presiones, corriente del motor, temperatura del aceite y señales eléctricas de las válvulas de entrada de aire. 
+La información fue registrada a una frecuencia de 1 Hz entre febrero y agosto de 2020 (véase Tabla~\ref{tab:DatosBasicos})
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|l|l|l|c|c|c|c|c|c|}
+    \hline
+        \textbf{Variable} & \textbf{Tipo} & \textbf{Unidad} & \textbf{Mín.} & \textbf{Q1} & \textbf{Q2} & \textbf{Media} & \textbf{Q3} & \textbf{Máx.} \\ \hline
+        \hline
+    \end{tabular}
+    \caption{Información básica de los diferentes tipos de datos presentes en MetroPT-3~\cite{MetroPT-3}}
+    \label{tab:DatosBasicos}
+\end{table}
+
+Este conjunto de datos tiene como objetivo principal mejorar la detección de fallos y la predicción de mantenimiento. 
+Aunque no contiene etiquetas directas, se dispone de informes de fallos que permiten evaluar la efectividad de los algoritmos de detección de anomalías, predicción de fallos y estimación de RUL (véase la Tabla~\ref{tab:Reportes}).
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    \textbf{Inicio} & \textbf{Fin} & \textbf{Tipo de Fallo} & \textbf{Reporte} \\ 
+    \hline
+    18/04/2020 00:00 & 18/04/2020 23:59 & Fuga de Aire & - \\ 
+    29/05/2020 23:30 & 30/05/2020 06:00 & Fuga de Aire & Manutención a las 12:00 el 30/05\\
+    05/06/2020 10:00 & 07/06/2020 14:30 & Fuga de Aire & Manutención a las 12:00 el 08/06\\
+    14/07/2020 14:30 & 15/07/2020 19:00 & Fuga de Aire & Manutención a las 00:00 el 16/06\\
+    \hline
+    \end{tabular}
+    \caption{
+    Intervalos de tiempo con problemas en la compresión del aire.
+    Nos permite evaluar la capacidad de detección anomalías de nuestros modelo.}
+    \label{tab:Reportes}
+\end{table}
+
+Además, se recomienda utilizar el primer mes de datos para entrenar modelos, dejando el resto para las pruebas, permitiendo también la formación incremental si fuera necesario.
+
+
+\section{Análisis Exploratorio de Datos.}
+\section{Regresión Logística.}
+\section{Máquinas de Vectores de Soporte.}
+\section{Clasificador Bayesiano.}
+\section{Árboles de clasificación.}
+\section{Gradient Boosting.}
+\section{Stacking.}
+\section{AdaBoost.}
+\section{Bagging.}
 \printbibliography
 \end{document}
