@@ -1,4 +1,6 @@
 # Core latex/pdflatex auxiliary files:
+*.bcf-SAVE-ERROR
+*.bbl-SAVE-ERROR
 *.aux
 *.lof
 *.log
