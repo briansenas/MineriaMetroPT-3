@@ -1,14 +1,16 @@
+import os
 import shutil
 import sys
-import os
 from typing import Dict, List, Tuple
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import polars as pl
 import seaborn as sns
 from sklearn.metrics import (
     accuracy_score,
     auc,
+    classification_report,
     confusion_matrix,
     f1_score,
     precision_score,
@@ -116,7 +118,7 @@ def evaluate_model(
     y_true: pl.Series, y_pred: pl.Series, y_prob: pl.DataFrame
 ) -> Dict[str, float]:
     """
-    Evaluate the model performance using various metrics.
+    Evaluate the model performance using various metrics and return the classification report.
 
     Args:
         y_true (pl.Series): True labels.
@@ -124,7 +126,7 @@ def evaluate_model(
         y_prob (pl.DataFrame): Predicted probabilities.
 
     Returns:
-        Dict[str, float]: Dictionary containing evaluation metrics.
+        Dict[str, float]: Dictionary containing evaluation metrics and classification report.
     """
     metrics = {
         "Accuracy": accuracy_score(y_true, y_pred),
@@ -133,6 +135,12 @@ def evaluate_model(
         "F1-score": f1_score(y_true, y_pred, zero_division=0),
         "Specificity": recall_score(y_true, y_pred, zero_division=0),
     }
+
+    report = classification_report(y_true, y_pred, output_dict=True)
+    report_df = pd.DataFrame(report).transpose()
+
+    report_df.to_csv("data/classification_report.csv")
+
     return metrics
 
 
@@ -285,16 +293,15 @@ def main():
 
 if __name__ == "__main__":
     paths = [
-        "./MineriaMetroPT-3/MiguelGarciaLopez",
-        "./MineriaMetroPT-3/src/",
-        "./MineriaMetroPT-3/",
+        "./MineriaMetroPT-3/MiguelGarciaLopez/src",
+        "./MiguelGarciaLopez/src",
+        "./src",
     ]
 
     file_path = ""
     for path in paths:
-        full_path = os.path.join(path, "decision_tree.py")
-        if os.path.isfile(full_path):
-            file_path = path
+        if os.path.exists(path):
+            file_path = os.path.dirname(path)
             break
     if file_path:
         sys.path.append(file_path)
