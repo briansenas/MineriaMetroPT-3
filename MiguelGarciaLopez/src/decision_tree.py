@@ -1,8 +1,10 @@
+from datetime import datetime
 import os
 import shutil
 import sys
 from typing import Dict, List, Tuple
 
+import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
 import polars as pl
@@ -18,18 +20,17 @@ from sklearn.metrics import (
     roc_curve,
 )
 from sklearn.model_selection import RandomizedSearchCV, cross_val_score
-from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 
 def perform_hyperparameter_search(
-    pipeline: Pipeline, X: pl.DataFrame, y: pl.Series, cv: int = 10
+    model: DecisionTreeClassifier, X: pl.DataFrame, y: pl.Series, cv: int = 20
 ) -> Tuple[float, Dict[str, object]]:
     """
     Perform hyperparameter search using RandomizedSearchCV.
 
     Args:
-        pipeline (Pipeline): The pipeline to optimize.
+        model (DecisionTreeClassifier): The model to optimize.
         X (pl.DataFrame): Features for training.
         y (pl.Series): Target variable.
         cv (int): Number of cross-validation folds (default: 10).
@@ -45,7 +46,7 @@ def perform_hyperparameter_search(
     }
 
     grid_search = RandomizedSearchCV(
-        pipeline, param_grid, cv=cv, scoring="f1_micro", n_jobs=-1, verbose=1
+        model, param_grid, cv=cv, scoring="f1_micro", n_jobs=-1, verbose=1
     )
 
     grid_search.fit(X, y)
@@ -209,7 +210,7 @@ def build_structure():
     - .pdf files to 'doc'
     - .ipynb and .py files to 'src'
     """
-    folders = ["data", "img", "doc", "src"]
+    folders = ["data", "img", "doc", "src", "models"]
 
     for folder in folders:
         if not os.path.exists(folder):
@@ -243,6 +244,25 @@ def build_structure():
             print(f"Moved {filename} to src/")
 
 
+def eval(df: pl.DataFrame, model: DecisionTreeClassifier, prefix: str = ""):
+    X = df.drop("is_anomaly")
+    y = df["is_anomaly"]
+
+    y_pred = model.predict(X)
+    y_prob = model.predict_proba(X)
+
+    metrics = evaluate_model(y, y_pred, y_prob)
+    print("Evaluation Metrics:", metrics)
+
+    # Save ROC plot
+    plot_roc_curve(y, y_prob, f"img/{prefix}roc_curve.png")
+
+    # Save confusion matrix plot
+    plot_confusion_matrix(y, y_pred, f"img/{prefix}confusion_matrix.png")
+
+    return metrics
+
+
 def main():
     random_state = 42
 
@@ -274,21 +294,26 @@ def main():
     # Tree visualization
     save_tree_visualization(model, X_train.columns, "img/tree_visualization.png")
 
+    # Train evaluation
+    train_metrics = eval(train_df, model)
+
     # Test data evaluation
-    X_test = test_df.drop("is_anomaly")
-    y_test = test_df["is_anomaly"]
+    # test_metrics = eval(test_df, model, prefix = "test_")
 
-    y_pred = model.predict(X_test)
-    y_prob = model.predict_proba(X_test)
+    # Prepare metadata
+    model_filename = f"decision_tree_{datetime.now().strftime('%Y-%m-%d-%H:%M')}"
+    metadata = {
+        "best_score": best_score,
+        "best_params": best_params,
+        "train_metrics": train_metrics,
+        "test_metrics": [],
+        "model_filename": model_filename,
+    }
 
-    metrics = evaluate_model(y_test, y_pred, y_prob)
-    print("Evaluation Metrics:", metrics)
-
-    # Save ROC plot
-    plot_roc_curve(y_test, y_prob, "img/roc_curve.png")
-
-    # Save confusion matrix plot
-    plot_confusion_matrix(y_test, y_pred, "img/confusion_matrix.png")
+    model_with_metadata = {"model": model, "metadata": metadata}
+    # Save the model 
+    joblib.dump(model_with_metadata, os.path.join("models", model_filename))
+    print(f"Model and metadata saved as {model_filename}")
 
 
 if __name__ == "__main__":
