@@ -1,8 +1,8 @@
-from datetime import datetime
 import os
 import shutil
 import sys
-from typing import Dict, List, Tuple
+from datetime import datetime
+from typing import Dict, List, Tuple, Union
 
 import joblib
 import matplotlib.pyplot as plt
@@ -24,7 +24,7 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 
 
 def perform_hyperparameter_search(
-    model: DecisionTreeClassifier, X: pl.DataFrame, y: pl.Series, cv: int = 20
+    model: DecisionTreeClassifier, X: pl.DataFrame, y: pl.Series
 ) -> Tuple[float, Dict[str, object]]:
     """
     Perform hyperparameter search using RandomizedSearchCV.
@@ -33,7 +33,6 @@ def perform_hyperparameter_search(
         model (DecisionTreeClassifier): The model to optimize.
         X (pl.DataFrame): Features for training.
         y (pl.Series): Target variable.
-        cv (int): Number of cross-validation folds (default: 10).
 
     Returns:
         Tuple[float, Dict[str, object]]: Best score and best parameters.
@@ -44,13 +43,61 @@ def perform_hyperparameter_search(
         "min_samples_leaf": [1, 2, 4, 6],
         "criterion": ["gini", "entropy"],
     }
+    folds = X["fold"].unique()
 
     grid_search = RandomizedSearchCV(
-        model, param_grid, cv=cv, scoring="f1_micro", n_jobs=-1, verbose=1
+        model,
+        param_grid,
+        cv=get_cv_iterable(folds, "fold", X),
+        scoring="f1_micro",
+        n_jobs=-1,
+        verbose=1,
     )
 
-    grid_search.fit(X, y)
+    grid_search.fit(X.drop("fold"), y)
     return grid_search.best_score_, grid_search.best_params_
+
+
+def perform_cross_validation(
+    model: DecisionTreeClassifier, X: pl.DataFrame, y: pl.Series
+) -> None:
+    """
+    Perform cross-validation and compute metrics for each fold.
+
+    Args:
+        model (BaseEstimator): The model to evaluate.
+        X (pl.DataFrame): Features for training, including a "fold" column.
+        y (pl.Series): Target variable.
+    """
+    folds = X["fold"].unique()
+    fold_metrics: List[Dict[str, Union[int, float]]] = []
+
+    # Iterate over each fold
+    for fold in folds:
+        train_data = X[X["fold"] != fold].drop(columns=["fold"])
+        val_data = X[X["fold"] == fold].drop(columns=["fold"])
+        train_labels = y[X["fold"] != fold]
+        val_labels = y[X["fold"] == fold]
+
+        # Train the model on the current training fold
+        model.fit(train_data, train_labels)
+
+        # Predict and evaluate on the validation fold
+        predictions = model.predict(val_data)
+        f1 = f1_score(val_labels, predictions, average="micro")
+
+        fold_metrics.append({"fold": fold, "f1_score": f1})
+
+    # Calculate average metrics
+    avg_f1 = sum([metric["f1_score"] for metric in fold_metrics]) / len(fold_metrics)
+    fold_metrics.append({"fold": "average", "f1_score": avg_f1})
+
+    # Save metrics to CSV
+    metrics_df = pd.DataFrame(fold_metrics)
+    metrics_df.to_csv("data/cross_validation_metrics.csv", index=False)
+
+    print("Cross-validation metrics saved to cross_validation_cv_metrics.csv")
+    print(f"Average F1 score: {avg_f1:.4f}")
 
 
 def calculate_feature_importance(
@@ -66,7 +113,7 @@ def calculate_feature_importance(
     Returns:
         pl.DataFrame: Feature importance sorted in descending order.
     """
-    feature_names = X.columns
+    feature_names = [col for col in X.columns if col != "fold"]
     importances = model.feature_importances_
     importance_df = pl.DataFrame({"feature": feature_names, "importance": importances})
 
@@ -252,7 +299,7 @@ def eval(df: pl.DataFrame, model: DecisionTreeClassifier, prefix: str = ""):
     y_prob = model.predict_proba(X)
 
     metrics = evaluate_model(y, y_pred, y_prob)
-    print("Evaluation Metrics:", metrics)
+    print(f"{prefix.replace('_', '').upper()} - Evaluation Metrics:", metrics)
 
     # Save ROC plot
     plot_roc_curve(y, y_prob, f"img/{prefix}roc_curve.png")
@@ -261,6 +308,31 @@ def eval(df: pl.DataFrame, model: DecisionTreeClassifier, prefix: str = ""):
     plot_confusion_matrix(y, y_pred, f"img/{prefix}confusion_matrix.png")
 
     return metrics
+
+
+def get_cv_iterable(
+    folds: list,
+    fold_column: str,
+    train: pl.DataFrame,
+):
+    """
+    Generates cross-validation (CV) train-test splits for each fold based on a specified fold column in the dataframe.
+
+    Args:
+        folds (list): A list of fold identifiers. Each fold corresponds to a subset of the dataset to be used as the test set in each iteration.
+        fold_column (str): The name of the column in the `train` DataFrame that contains the fold identifiers.
+        train (pl.DataFrame): The training dataset containing the data and fold identifiers.
+
+    Yields:
+        tuple: A tuple of two elements:
+            - train_indexes (Index): The indices of the training set for the current fold.
+            - test_indexes (Index): The indices of the test set for the current fold.
+    """
+    train_pd = train.to_pandas()
+    for fold in folds:
+        test_indexes = train_pd[train_pd[fold_column] == fold].index
+        train_indexes = train_pd[train_pd[fold_column] != fold].index
+        yield (train_indexes, test_indexes)
 
 
 def main():
@@ -277,6 +349,7 @@ def main():
     model = DecisionTreeClassifier(class_weight="balanced", random_state=random_state)
     cv_scores = cross_val_score(model, X_train, y_train, cv=5, scoring="f1_micro")
     print(f"Cross-validation F1_micro scores: {cv_scores.mean():.4f}")
+    print(f"Cross-validation F1_micro std_dv: {cv_scores.std():.4f}")
 
     # Perform hyperparameter tuning
     best_score, best_params = perform_hyperparameter_search(model, X_train, y_train)
@@ -285,7 +358,7 @@ def main():
 
     # Fit the pipeline with the best parameters
     model.set_params(**best_params)
-    model.fit(X_train, y_train)
+    model.fit(X_train.drop("fold"), y_train)
 
     # Feature importance
     feature_importance = calculate_feature_importance(model, X_train)
@@ -295,10 +368,10 @@ def main():
     save_tree_visualization(model, X_train.columns, "img/tree_visualization.png")
 
     # Train evaluation
-    train_metrics = eval(train_df, model)
+    train_metrics = eval(train_df.drop("fold"), model)
 
     # Test data evaluation
-    # test_metrics = eval(test_df, model, prefix = "test_")
+    #test_metrics = eval(test_df, model, prefix="test_")
 
     # Prepare metadata
     model_filename = f"decision_tree_{datetime.now().strftime('%Y-%m-%d-%H:%M')}"
@@ -311,7 +384,7 @@ def main():
     }
 
     model_with_metadata = {"model": model, "metadata": metadata}
-    # Save the model 
+    # Save the model
     joblib.dump(model_with_metadata, os.path.join("models", model_filename))
     print(f"Model and metadata saved as {model_filename}")
 
