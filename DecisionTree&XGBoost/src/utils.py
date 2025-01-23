@@ -1,10 +1,12 @@
 import os
 import shutil
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
+import numpy as np
 import pandas as pd
 import polars as pl
 import seaborn as sns
+from hyperopt import fmin, tpe, hp, Trials, STATUS_OK
 from matplotlib import pyplot as plt
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
@@ -260,3 +262,63 @@ def evaluate(
     )
 
     return metrics
+
+
+def get_xgboost_space():
+    return {
+        "max_depth": hp.quniform("max_depth", 3, 18, 1),
+        "gamma": hp.uniform("gamma", 1, 9),
+        "reg_alpha": hp.quniform("reg_alpha", 40, 180, 1),
+        "reg_lambda": hp.uniform("reg_lambda", 0, 1),
+        "colsample_bytree": hp.uniform("colsample_bytree", 0.5, 1),
+        "min_child_weight": hp.quniform("min_child_weight", 0, 10, 1),
+        "n_estimators": 180,
+        "seed": 0,
+    }
+
+
+def get_xgboost_objective_func(
+    space: Dict[str, Any], X_train, y_train, folds, fold_column
+):
+    def objective(params):
+        params["max_depth"] = int(params["max_depth"])
+        params["reg_alpha"] = int(params["reg_alpha"])
+        params["min_child_weight"] = int(params["min_child_weight"])
+
+        fold_scores = []
+
+        for train_indexes, test_indexes in get_cv_iterable(folds, fold_column, X_train):
+            # Split the data
+            X_train_fold, X_test_fold = X_train[train_indexes], X_train[test_indexes]
+            y_train_fold, y_test_fold = y_train[train_indexes], y_train[test_indexes]
+
+            clf = XGBClassifier(**params)
+            clf.fit(
+                X_train_fold,
+                y_train_fold,
+                eval_set=[(X_train_fold, y_train_fold), (X_test_fold, y_test_fold)],
+                verbose=False,
+            )
+
+            pred = clf.predict(X_test_fold)
+            accuracy = accuracy_score(y_test_fold, pred > 0.5)
+            fold_scores.append(accuracy)
+
+        # Compute the average score across all folds
+        avg_score = np.mean(fold_scores)
+        print("Average CV Score:", avg_score)
+        return {"loss": -avg_score, "status": STATUS_OK}
+
+    return objective
+
+
+def bayesian_optimization(
+    space: Dict[str, Any], objective: callable
+) -> Any | dict | None:
+    trials = Trials()
+    best = fmin(
+        fn=objective, space=space, algo=tpe.suggest, max_evals=100, trials=trials
+    )
+
+    print("Best hyperparameters:", best)
+    return best

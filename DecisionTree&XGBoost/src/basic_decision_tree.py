@@ -29,7 +29,7 @@ def perform_hyperparameter_search(
         Tuple[float, Dict[str, object]]: Best score and best parameters.
     """
     param_grid = {
-        "max_depth": [2, 3, 5, 7, 10],
+        "max_depth": [2, 3, 5, 7, 10, None],
         "min_samples_split": [2, 5, 10, 15],
         "min_samples_leaf": [1, 2, 4, 6],
         "criterion": ["gini", "entropy"],
@@ -165,8 +165,8 @@ def main():
 
 if __name__ == "__main__":
     paths = [
-        "./MineriaMetroPT-3/MiguelGarciaLopez/src",
-        "./MiguelGarciaLopez/src",
+        "./MineriaMetroPT-3/DecisionTree&XGBoost/src",
+        "./DecisionTree&XGBoost/src",
         "./src",
     ]
 

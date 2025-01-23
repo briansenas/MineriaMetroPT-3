@@ -4,9 +4,15 @@ from datetime import datetime
 
 import joblib
 import polars as pl
-from utils import build_structure, evaluate, perform_cross_validation
+from utils import (
+    build_structure,
+    evaluate,
+    get_xgboost_objective_func,
+    perform_cross_validation,
+    get_xgboost_space,
+    bayesian_optimization,
+)
 from xgboost import XGBClassifier
-
 
 def main():
     random_state = 42
@@ -24,6 +30,15 @@ def main():
 
     # Perform cross validation
     perform_cross_validation(model, X_train, y_train, metric)
+
+    # Perform bayesian optimization
+    space = get_xgboost_space()
+    folds = X_train["fold"].unique()
+    objective = get_xgboost_objective_func(space, X_train, y_train, folds, "fold")
+
+    # Run Bayesian optimization
+    best_params = bayesian_optimization(space, objective)
+    print("Best hyperparameters found:", best_params)
 
     # Train evaluation
     train_metrics = evaluate(train_df.drop("fold"), model)
@@ -49,8 +64,8 @@ def main():
 
 if __name__ == "__main__":
     paths = [
-        "./MineriaMetroPT-3/MiguelGarciaLopez/src",
-        "./MiguelGarciaLopez/src",
+        "./MineriaMetroPT-3/DecisionTree&XGBoost/src",
+        "./DecisionTree&XGBoost/src",
         "./src",
     ]
 
