@@ -215,6 +215,21 @@ Además, se recomienda utilizar el primer mes de datos para entrenar modelos, de
 
 
 \section{Análisis Exploratorio de Datos.}
+\subsection{Introducir aquí las visualizaciones y comentarios EDA}
+\textbf{Insertar aquí el EDA}
+\subsection{Introducir aquí los intervalos ``raros'' hallados}
+Durante el análisis EDA y prepración del conjunto de datos de entrenamiento y evaluación se han recogido nuevas anomalías, veáse la Tabla [] y Figura[].
+Sería interesante volver a consultar con un experto del campo para que valide dichas anomalías. No obstante, presentan un perfil suficientemente cercano al de las anomalías clasificadas.
+Por ello, consideramos oportuno la inclusión de dichos ejemplos como anomalías para ayudar a paliar el bajo número de ejemplo de casos positivos....
+
+Tras observar y analizar el conjunto de datos, seguimos un acercamiento similar a [citar SAEVAE/RuleBased]  para tratar a la serie temporal. 
+Para ello....encontramos que el tiempo medio de ambos motores se acercan a los resultados de [RuleBased] (véase Tabla ...), donde....
+Hay que tener en cuenta la presencia de valores perdidos (sensores no envían la información) y los saltos temporales en los ciclos que introducen las anomalías.
+
+Teniendo en cuenta que el tiempo medio de ciclo es de 1260 segundos, utilizaremos un intervalo el doble de este como nuestra ventana deslizante.
+Logramos mejorar el tiempo mínimo de información para clasificación frente a [ruleBased] y acercanos al obtenido en [SAE/VAE].
+[mencionar imagen tal]
+
 \section{Regresión Logística.}
 \section{Máquinas de Vectores de Soporte.}
 \section{Clasificador Bayesiano.}
