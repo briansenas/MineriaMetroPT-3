@@ -272,7 +272,7 @@ def get_xgboost_space():
         "reg_lambda": hp.uniform("reg_lambda", 0, 1),
         "colsample_bytree": hp.uniform("colsample_bytree", 0.5, 1),
         "min_child_weight": hp.quniform("min_child_weight", 0, 10, 1),
-        "n_estimators": 180,
+        "n_estimators": hp.quniform("n_estimators", 1, 140, 2),
         "seed": 0,
     }
 
@@ -282,6 +282,9 @@ def get_xgboost_objective_func(
 ):
     def objective(params):
         params["max_depth"] = int(params["max_depth"])
+        params["gamma"] = int(params["gamma"])
+        params["reg_lambda"] = int(params["reg_lambda"])
+        params["n_estimators"] = int(params["n_estimators"])
         params["reg_alpha"] = int(params["reg_alpha"])
         params["min_child_weight"] = int(params["min_child_weight"])
 

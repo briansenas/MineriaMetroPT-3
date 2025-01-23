@@ -130,7 +130,7 @@ def main():
     print(f"Best {metric} score: {best_score:.4f}")
     print(f"Best parameters: {best_params}")
 
-    # Fit the pipeline with the best parameters
+    # Fit the model with the best parameters
     model.set_params(**best_params)
     model.fit(X_train.drop("fold"), y_train)
 

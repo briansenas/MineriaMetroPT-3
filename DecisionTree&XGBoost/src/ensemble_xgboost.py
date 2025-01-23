@@ -5,14 +5,14 @@ from datetime import datetime
 import joblib
 import polars as pl
 from utils import (
+    bayesian_optimization,
     build_structure,
     evaluate,
     get_xgboost_objective_func,
-    perform_cross_validation,
     get_xgboost_space,
-    bayesian_optimization,
 )
 from xgboost import XGBClassifier
+
 
 def main():
     random_state = 42
@@ -25,12 +25,6 @@ def main():
     X_train = train_df.drop("is_anomaly")
     y_train = train_df["is_anomaly"]
 
-    # Prepare model
-    model = XGBClassifier(objective="binary:logistic", random_state=random_state)
-
-    # Perform cross validation
-    perform_cross_validation(model, X_train, y_train, metric)
-
     # Perform bayesian optimization
     space = get_xgboost_space()
     folds = X_train["fold"].unique()
@@ -38,7 +32,16 @@ def main():
 
     # Run Bayesian optimization
     best_params = bayesian_optimization(space, objective)
-    print("Best hyperparameters found:", best_params)
+
+    # Train model with best params
+    best_params = {key: int(best_params[key]) for key in best_params.keys()}
+    model = XGBClassifier(
+        objective="binary:logistic", random_state=random_state, **best_params
+    )
+
+    # Fit the model with the best parameters
+    model.set_params(**best_params)
+    model.fit(X_train.drop("fold"), y_train)
 
     # Train evaluation
     train_metrics = evaluate(train_df.drop("fold"), model)
