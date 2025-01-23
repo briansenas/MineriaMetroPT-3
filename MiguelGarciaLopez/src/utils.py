@@ -1,11 +1,12 @@
 import os
 import shutil
-from typing import Dict
+from typing import Dict, Union
 
 import pandas as pd
 import polars as pl
 import seaborn as sns
 from matplotlib import pyplot as plt
+from sklearn.base import BaseEstimator
 from sklearn.metrics import (
     accuracy_score,
     auc,
@@ -16,6 +17,7 @@ from sklearn.metrics import (
     recall_score,
     roc_curve,
 )
+from xgboost import XGBClassifier
 
 
 def get_cv_iterable(
@@ -36,10 +38,11 @@ def get_cv_iterable(
             - train_indexes (Index): The indices of the training set for the current fold.
             - test_indexes (Index): The indices of the test set for the current fold.
     """
+
     train_pd = train.to_pandas()
     for fold in folds:
-        test_indexes = train_pd[train_pd[fold_column] == fold].index
-        train_indexes = train_pd[train_pd[fold_column] != fold].index
+        test_indexes = train_pd[train_pd[fold_column] == fold].index.to_list()
+        train_indexes = train_pd[train_pd[fold_column] != fold].index.to_list()
         yield (train_indexes, test_indexes)
 
 
@@ -142,14 +145,16 @@ def build_structure():
             print(f"Moved {filename} to src/")
 
 
-def evaluate_model(y_true: pl.Series, y_pred: pl.Series) -> Dict[str, float]:
+def evaluate_model(
+    y_true: pl.Series, y_pred: pl.Series, type_model: str
+) -> Dict[str, float]:
     """
     Evaluate the model performance using various metrics and return the classification report.
 
     Args:
         y_true (pl.Series): True labels.
         y_pred (pl.Series): Predicted labels.
-        y_prob (pl.DataFrame): Predicted probabilities.
+        type_model (str)): Type of model.
 
     Returns:
         Dict[str, float]: Dictionary containing evaluation metrics and classification report.
@@ -164,6 +169,94 @@ def evaluate_model(y_true: pl.Series, y_pred: pl.Series) -> Dict[str, float]:
     report = classification_report(y_true, y_pred, output_dict=True)
     report_df = pd.DataFrame(report).transpose()
 
-    report_df.to_csv("data/classification_report.csv")
+    report_df.to_csv(f"data/{type_model}_classification_report.csv")
+
+    return metrics
+
+
+def perform_cross_validation(
+    model: Union[BaseEstimator, XGBClassifier],
+    X: pl.DataFrame,
+    y: pl.Series,
+    metric: str,
+) -> None:
+    """
+    Perform cross-validation and compute metrics for each fold.
+
+    Args:
+        model (BaseEstimator): The model to evaluate.
+        X (pl.DataFrame): Features for training, including a "fold" column.
+        y (pl.Series): Target variable.
+        metric (str): Score metric to use.
+    """
+    folds = X["fold"].unique()
+    fold_metrics: pl.List[Dict[str, Union[int, float]]] = []
+    X = X.with_row_index("index")
+
+    for fold, (train_indexes, test_indexes) in enumerate(
+        get_cv_iterable(folds, "fold", X)
+    ):
+        X_train, X_test = (
+            X.filter(pl.col("index").is_in(train_indexes)),
+            X.filter(pl.col("index").is_in(test_indexes)),
+        )
+        y_train, y_test = (
+            y[train_indexes],
+            y[test_indexes],
+        )
+
+        # Train the model on the current training fold
+        model.fit(X_train.drop("fold", "index"), y_train)
+
+        # Predict and evaluate on the validation fold
+        predictions = model.predict(X_test.drop("fold", "index"))
+
+        if metric == "accuracy":
+            score = accuracy_score(y_test, predictions)
+        elif metric == "precision":
+            score = precision_score(y_test, predictions)
+        elif metric == "recall":
+            score = recall_score(y_test, predictions)
+        else:
+            score = f1_score(y_test, predictions)
+
+        fold_metrics.append({"fold": fold, metric: score})
+
+    # Calculate average metrics
+    avg_score = sum([aux_metric[metric] for aux_metric in fold_metrics]) / len(
+        fold_metrics
+    )
+    fold_metrics.append({"fold": "average", metric: avg_score})
+
+    # Save metrics to CSV
+    metrics_df = pd.DataFrame(fold_metrics)
+    type_model = "xgboost" if isinstance(model, XGBClassifier) else "decision_tree"
+    metrics_df.to_csv(f"data/{type_model}_cross_validation_metrics.csv", index=False)
+
+    print("Cross-validation metrics saved to cross_validation_cv_metrics.csv")
+    print(f"Average {metric} score: {avg_score:.4f}")
+
+
+def evaluate(
+    df: pl.DataFrame, model: Union[BaseEstimator, XGBClassifier], prefix: str = ""
+):
+    X = df.drop("is_anomaly")
+    y = df["is_anomaly"]
+
+    y_pred = model.predict(X)
+    y_prob = model.predict_proba(X)
+
+    type_model = "xgboost" if isinstance(model, XGBClassifier) else "decision_tree"
+
+    metrics = evaluate_model(y, y_pred, type_model)
+    print(f"{prefix.replace('_', ' - ').upper()}Evaluation Metrics:", metrics)
+
+    # Save ROC plot
+    plot_roc_curve(y, y_prob, f"img/{prefix}{type_model}_roc_curve_decision_tree.png")
+
+    # Save confusion matrix plot
+    plot_confusion_matrix(
+        y, y_pred, f"img/{prefix}{type_model}_confusion_matrix_decision_tree.png"
+    )
 
     return metrics
