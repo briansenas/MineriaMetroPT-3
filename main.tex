@@ -144,7 +144,7 @@
 \hypertarget{Indice}{}
 \tableofcontents
 \newpage
-\section{Introducción.}
+\section{Introducción}
 Se ha realizado un análisis y comparativa entre diferentes modelos para la detección de anomalías y predicción de vida útil restante (RUL por sus siglas en inglés)
 en compresores del sector ferroviario. Para ello, se ha utilizado el conjunto de datos (dataset) ``MetroPT-3''~\cite{MetroPT-3}.
 Está publicado en ``UCI Machine Learning Repository''~\cite{UCIMLR} y, según la descripción, MetroPT-3~\cite{MetroPT-3} es un conjunto de datos multivariantes de series temporales. Los datos provienen de sensores analógicos y digitales 
@@ -159,18 +159,18 @@ La información fue registrada a una frecuencia de 1 Hz entre febrero y agosto d
 TP2               & Numérico      & -0.032        & -0.014      & -0.012      & 1.368         & -0.010      & 10.676        \\ 
 TP3               & Numérico      & 0.730         & 8.492       & 8.960       & 8.985         & 9.492       & 10.302        \\ 
 H1                & Numérico      & -0.036        & 8.254       & 8.784       & 7.568         & 9.374       & 10.288        \\ 
-DV\_pressure      & Numérico      & -0.032        & -0.022      & -0.020      & 0.05596       & -0.018      & 9.844         \\ 
+DV pressure      & Numérico      & -0.032        & -0.022      & -0.020      & 0.05596       & -0.018      & 9.844         \\ 
 Reservoirs        & Numérico      & 0.712         & 8.494       & 8.960       & 8.985         & 9.492       & 10.300        \\ 
-Oil\_temperature  & Numérico      & 15.40         & 57.77       & 62.70       & 62.64         & 67.25       & 89.05         \\ 
-Motor\_current    & Numérico      & 0.020         & 0.040       & 0.045       & 2.050         & 3.808       & 9.295         \\ 
+Oil temperature  & Numérico      & 15.40         & 57.77       & 62.70       & 62.64         & 67.25       & 89.05         \\ 
+Motor current    & Numérico      & 0.020         & 0.040       & 0.045       & 2.050         & 3.808       & 9.295         \\ 
 COMP              & Numérico      & 0.000         & 1.000       & 1.000       & 0.837         & 1.000       & 1.000         \\ 
-DV\_eletric       & Numérico      & 0.000         & 0.000       & 0.000       & 0.1606        & 0.000       & 1.000         \\ 
+DV eletric       & Numérico      & 0.000         & 0.000       & 0.000       & 0.1606        & 0.000       & 1.000         \\ 
 Towers            & Numérico      & 0.000         & 1.000       & 1.000       & 0.9198        & 1.000       & 1.000         \\ 
 MPG               & Numérico      & 0.000         & 1.000       & 1.000       & 0.8327        & 1.000       & 1.000         \\ 
 LPS               & Numérico      & 0.000         & 0.000       & 0.000       & 0.00342       & 0.000       & 1.000         \\ 
-Pressure\_switch  & Numérico      & 0.000         & 1.000       & 1.000       & 0.9914        & 1.000       & 1.000         \\ 
-Oil\_level        & Numérico      & 0.000         & 1.000       & 1.000       & 0.9042        & 1.000       & 1.000         \\ 
-Caudal\_impulses  & Numérico      & 0.000         & 1.000       & 1.000       & 0.9371        & 1.000       & 1.000         \\ \hline
+Pressure switch  & Numérico      & 0.000         & 1.000       & 1.000       & 0.9914        & 1.000       & 1.000         \\ 
+Oil level        & Numérico      & 0.000         & 1.000       & 1.000       & 0.9042        & 1.000       & 1.000         \\ 
+Caudal impulses  & Numérico      & 0.000         & 1.000       & 1.000       & 0.9371        & 1.000       & 1.000         \\ \hline
     \end{tabular}
     \caption{Información básica de los diferentes tipos de datos presentes en MetroPT-3~\cite{MetroPT-3}}
     \label{tab:DatosBasicos}
@@ -238,7 +238,7 @@ Aunque no contiene etiquetas directas, se dispone de informes de fallos que perm
 Además, se recomienda utilizar el primer mes de datos para entrenar modelos, dejando el resto para las pruebas, permitiendo también la formación incremental si fuera necesario.
 
 
-\section{Análisis Exploratorio de Datos.}
+\section{Análisis Exploratorio de Datos}
 Se tienen más de un millón de observaciones correspondientes a distintos momentos en el tiempo que capturan datos de distintos sensores. Todas las variables son continuas a excepción del \textit{timestamp}, que es la fecha de registro de cada valor en las variables.
 No hay nulos, por lo que no se requiere ningún tratamiento especial (como imputaciones) para ese tipo de casos. Lo que sí ocurre es que hay pequeños intervalos de tiempo vacíos, sin datos, pero estos no aparecen como nulos, solo pasa de un intervalo a otro en un salto temporal que se salta parte del tiempo. En ese caso se ha considerado válido eliminar ese espacio temporal por ser mínimo y por no tener información de si podría haber anomalía o no. Otra opción habría sido imputar ese espacio temporal con datos sintéticos que repliquen los datos del espacio temporal anterior, pero se consideró más válido eliminar ese intervalo.
 
@@ -389,19 +389,19 @@ Ya que se tienen muchos datos, hacer la prueba de \textit{adfuller} con todos en
     \hline
     TP3 & 9/10 & -5.32 & $10^{-4}$ & Sí \\
     H1 & 10/10 & -6.24 & $10^{-7}$ & Sí \\
-    DV\_eletric & 8/10 & -5.68 & $10^{-6}$ & Sí \\
-    DV\_pressure & 9/10 & -21.32 & $10^{-22}$ & Sí \\
-    Caudal\_impulses & 0/10 & - & - & Valor Contante \\
+    DV eletric & 8/10 & -5.68 & $10^{-6}$ & Sí \\
+    DV pressure & 9/10 & -21.32 & $10^{-22}$ & Sí \\
+    Caudal impulses & 0/10 & - & - & Valor Contante \\
     TP2 & 9/10 & -6.29 & $10^{-7}$ & Sí \\
-    Pressure\_switch & 9/10 & -20.91 & $10^{-13}$ & Sí \\
+    Pressure switch & 9/10 & -20.91 & $10^{-13}$ & Sí \\
     Reservoirs & 10/10 & -5.68 & $10^{-6}$ & Sí \\
     Towers & 10/10 & -6.81 & $10^{-9}$ & Sí \\
     LPS & 1/10 & -4.76 & $10^{-5}$ & Parcialmente \\
-    Oil\_level & 2/10 & -2.59 & $0.1$ & No \\
+    Oil level & 2/10 & -2.59 & $0.1$ & No \\
     COMP & 10/10 & -5.99 & $10^{-6}$ & Sí \\
-    Motor\_current & 9/10 & -4.56 & $10^{-4}$ & Sí \\
+    Motor current & 9/10 & -4.56 & $10^{-4}$ & Sí \\
     MPG & 9/10 & -6.09 & $10^{-7}$ & Sí \\
-    Oil\_temperature & 10/10 & -5.28 & $10^{-5}$ & Sí \\
+    Oil temperature & 10/10 & -5.28 & $10^{-5}$ & Sí \\
     \hline
     \end{tabular}
     \caption{Tabla de resultados tras $10$ repeticiones en tramos aleatorios}
@@ -427,7 +427,7 @@ No obstante, este enfoque no está exento de desafíos. Una de las principales l
 \subsubsection{Definición de la ventana deslizante}
 
 Para resolver este problema estudiamos los tiempos de activaciones de los motores para poder definir una ventana deslizante que pueda recoger información de la activación de los mismos. 
-Para ello, se ha calculado la mediana del tiempo de activación de los motores. Para ello, se ha detectado la activación y apagado del motor por medio de la variable ``Motor\_current'', cuyos 
+Para ello, se ha calculado la mediana del tiempo de activación de los motores. Para ello, se ha detectado la activación y apagado del motor por medio de la variable ``\textit{Motor current}'', cuyos 
 valores para apagado son inferiores a 0.05, veáse la Figura~\ref{fig:VisualizacionDatos}.
 
 \begin{figure}[htp]
@@ -549,8 +549,21 @@ Por último, se asigna el pliegue 1 y 8 (elección aleatoria) como el conjunto d
     \label{tab:ValidacionCruzada}
 \end{table}
 
-\section{Regresión Logística.}
-\section{Máquinas de Vectores de Soporte.}
+\section{Métricas de evaluación}\label{sec:Metricas}
+
+Debido a que tratamos de evaluar el rendimiento de diferentes modelos para la resolución de un problema de detección de anomalías, 
+el uso de métricas como la \textbf{precisión}, la \textbf{sensibilidad} (\textit{recall}) y la \textbf{puntuación F1} es fundamental para evitar evaluaciones sesgadas. 
+Cada una de estas métricas aporta una perspectiva única sobre cómo el modelo maneja tanto las clases mayoritarias (no anomalías) como las minoritarias (anomalías).
+
+\begin{itemize}
+    \item \textbf{Precisión}: mide la proporción de verdaderos positivos entre todas las instancias clasificadas como positivas. Esto permite evaluar qué tan confiable es el modelo al detectar anomalías sin producir demasiados falsos positivos.
+    \item \textbf{Sensibilidad}: evalúa la capacidad del modelo para identificar correctamente todas las anomalías presentes en el conjunto de datos. Esta métrica es crucial en aplicaciones donde no detectar una anomalía puede tener consecuencias graves.
+    \item \textbf{F1}: como métrica armonizada entre precisión y sensibilidad, es especialmente útil en tareas de detección de anomalías, ya que equilibra ambos aspectos, permitiendo evaluar el rendimiento del modelo en contextos donde el costo de los falsos positivos y falsos negativos debe ser considerado conjuntamente.
+\end{itemize}
+
+Es por ello que en las diferentes experimentaciones se ha hecho uso de esas métricas. La evaluación es el promedio del rendimiento de los modelos en los diferentes pliegues de validación. 
+
+\section{Máquinas de Vectores de Soporte}
 A continuación, se ha implementado un modelo SVM (Support Vector Machine) para trabajar con los conjuntos de datos de entrenamiento y test. Este modelo es eficaz para problemas de clasificación binaria con relaciones no lineales, especialmente cuando el número de características es elevado, como ocurre en este caso.\\
 Antes de construir este modelo, se han escalado los datasets de entrenamiento y de test aplicando la función \texttt{StandardScaler} para normalizar los datos, lo que es crucial en modelos como SVM, que son sensibles a la magnitud de las características. Seguidamente, se ha implementado la función \texttt{get\_cv\_iterable} para obtener las cuatro separaciones del conjunto de entrenamiento para poder hacer la validación cruzada. Con estos pequeños ajustes, se ha procedido a la configuración del modelo básico de SVM. \\
 
@@ -607,13 +620,60 @@ Para finalizar, se ha generado la matriz de confusión que se puede observar en 
 En conclusión, el modelo SVM tiene un desempeño excelente con una precisión general del 99\%. Para la clase ``True'' presenta mayor dificultad de detección debido a la desbalanceada proporción entre las clases (muchos más datos no anómalos que anómalos).
 
 
-\section{Clasificador Bayesiano (Brian Sena).}
+\section{Clasificador Bayesiano (Brian Sena)}
+El clasificador bayesiano (\textit{Naive Bayes}) es un algoritmo de clasificación basado en el Teorema de Bayes, el cual calcula la probabilidad posterior de una clase dado un conjunto de características de entrada. 
+A pesar de su simplicidad, es una técnica poderosa y ampliamente utilizada en problemas de clasificación, como el filtrado de correos no deseados, la clasificación de textos y el análisis de sentimientos.
+El modelo recibe el calificativo de ``\textit{naive}'' (ingenuo) debido a su principal asunción: \textbf{independencia condicional entre las características}, es decir, se supone que todas las variables predictoras son independientes entre sí dado el valor de la clase. 
+Aunque esta asunción rara vez se cumple en escenarios del mundo real, \textit{Naive Bayes} sigue funcionando de manera sorprendentemente efectiva en muchos contextos, especialmente en dominios donde las relaciones entre variables no son complejas.
 
-\section{Árboles de clasificación.}
-\section{Gradient Boosting.}
-\section{Stacking (Brian Sena).}
-\section{AdaBoost.}
-\section{Bagging.}
+\subsection{Asunciones del Naive Bayes}
+\begin{itemize}
+    \item \textbf{Independencia condicional}: Se asume que las características son independientes entre sí. 
+        En este caso, se asume que la variabilidad de una característica no depende del valor de otra. No obstante, ya vimos que los distintos sensores iteractúan entre sí, lo que hace débil a esta asunción.
+    \item \textbf{Distribución de los datos:} \textit{Naive Bayes} asume que las características siguen una distribución normal dentro de cada clase. En nuestro caso, solamente se cumple para ``\textit{Pressure Switch}''.
+    \item \textbf{Balance de clases}: El modelo puede ser sensible al desequilibrio de clases (cuando una clase es mucho más frecuente que otra), lo que puede sesgar las predicciones hacia la clase mayoritaria si no se toma en cuenta.
+\end{itemize}
+
+\subsection{Preprocesamiento}
+
+Para implementar el \textit{Naive Bayes} de manera efectiva, es crucial preparar los datos adecuadamente. 
+En este caso, no disponemos de variables categóricas que necesiten codificarse numéricamente ya que todas las características son numéricas y continuas. 
+Además, se ha eliminado los saltos temporales y no se dispone de valores faltantes.
+El algoritmo, dado que calcula distribuciones de probabilidad para cada clase~\cite{NaiveBayes} sin basarse en distancia, es invariante a la escala de los datos y, por ello, no necesitamos escalar los datos.
+No obstante, aunque en el pre-procesamiento definido anteriormente se ha intentado crear un conjunto de datos equilibrado, disponemos de un drástico desequilibrio debido a la baja probabilidad de anomalía del sistema.
+Es por ello que se ha incluído experimentación con métodos de submuestreo y sobremuestreo con técnicas como ``\textit{CondensedNearestNeighbour} (CNN)'' y ``\textit{SMOTE + TomekLinks} (SMOTETomek)''.
+Por último, dado la primera asunción de independencia entre características se experimenta también con técnicas de selección de características, utilizando pruebas como la ``chi-cuadrado'' o ``información mutua''.
+
+\subsection{Detalles de experimentación y resultados}\label{sec:ExpBayes}
+En el caso de la experimentación con submuestreo o sobremuestreo se ha hecho uso de la librería ``\textit{imblearn}''~\cite{imblearn} y ``\textit{scikit-learn}''~\cite{sklearn}. 
+La primera nos permite crear un \textit{pipeline} en el cuál solo se realiza las operaciones de submuestreo o sobremuestreo en los pliegues que correspondan al conjunto de entrenamiento en el bucle de validación. 
+De esta forma, las estimaciones de la precisión no se veen afectado por estos cambios, permitiendo estimar mejor la capacidad de generalización del modelo. La segunda nos permite añadir otras operaciones si necesarias (por ejemplo una normalización) además de disponer de la implementación de los modelos.
+Se ha realizado 4 pliegues de validación. Las métricas que utilizamos para evaluar el rendimiento se han discutido en la Sección~\ref{sec:Metricas}.
+
+\section{Árboles de clasificación}
+\section{Gradient Boosting}
+\section{Stacking (Brian Sena)}
+El \textit{Stacking} (apilamiento) es una técnica de aprendizaje automático que combina las predicciones de múltiples modelos base para construir un modelo final más robusto y preciso. 
+A diferencia de otros métodos de ensamblado, en el \textit{Stacking} se utiliza un modelo de nivel superior, conocido como meta-modelo, que aprende a combinar las predicciones de los modelos base.
+El \textit{Stacking} es particularmente útil cuando diferentes modelos base capturan distintos patrones en los datos, ya que el meta-modelo puede aprovechar la diversidad para mejorar el rendimiento global. 
+\subsection{Asunciones de Stacking}
+\begin{itemize}
+    \item \textbf{Diversidad de los modelos base}: El stacking asume que los modelos base son suficientemente diversos y que cada uno aporta información única sobre los datos. Si los modelos base son demasiado similares, su combinación puede no aportar mejoras significativas.
+    \item \textbf{Relación entre modelos base y meta-modelo}: El meta-modelo debe ser lo suficientemente flexible como para aprender a interpretar las predicciones de los modelos base. Esto incluye identificar cuáles son más confiables para ciertas regiones del espacio de características.
+    \item \textbf{Distribución de clases equilibrada}: Si los datos están desbalanceados, tanto los modelos base como el meta-modelo pueden sesgar sus predicciones hacia la clase mayoritaria, reduciendo la capacidad de detectar la clase minoritaria.
+    \item \textbf{Independencia de errores}: Aunque los modelos base pueden cometer errores, se espera que estos errores no estén perfectamente correlacionados entre ellos, de modo que el meta-modelo pueda mitigarlos al combinar las predicciones.
+\end{itemize}
+\subsection{Preprocesamiento}
+Se ha utilizado como modelo base aquellos implementados en diferentes secciones. Es decir, máquina de soporte vectorial (SVM por sus siglas en inglés), árbol de decisión y clasificador bayesiano simples. 
+Para ello, se ha creado un pipeline específico para cada modelo para preprocesar los datos conforme sus necesidades. Por ejemplo, en el caso de las máquinas de soporte vectorial, escalar los datos. 
+No se dispone de variables categóricas ni valores faltantes, por lo cuál lo único que difiere es el la presencia (o no) del escalado y la posible selección de variables.
+Para el caso de los árboles no se ha realizado ningún paso previo. Para el caso de SVM, se ha añadido un escalado como paso previo. 
+Para experimentar con el ajuste de la distribución de las clases, al igual que en el clasificador bayesiano, se ha hecho experimentos con ``\textit{CondensedNearestNeighbour} (CNN)'' y ``\textit{SMOTE + TomekLinks} (SMOTETomek)''.
+Aunque la idea es modelar diferentes características en cada modelo, y que sus errores sean independientes, se ha realizado una prueba adicional utilizando los mejores parámetros obtenidos en las experimentaciones previas de cada modelo individual.
+\subsection{Detalles de experimentación y resultados} 
+Se ha hecho uso de las mismas librerías definidas en la Sección~\ref{sec:ExpBayes}. Los mismos 4 pliegues de validación cruzada y las métricas de la Sección~\ref{sec:Metricas}.
+\section{AdaBoost}
+\section{Bagging}
 
 Por útlimo, se han trabajado con diferentes técnicas de Bagging para la clasificación de este dataset. En concreto, se han implementado tres ensembles; Random Forest, ExtraTrees y Random subspaces. Para estos algoritmos no es necesario escalar los datos, por lo que no se ha hecho ningún preprocesameinto adicional.
 
@@ -712,13 +772,13 @@ Con este modelo ya entrenado, se ha evaluado con el dataset de test, mostrando e
 
 Observando estas dos Tablas, se puede comprobar que este modelo arroja resultados muy similares a Random Forest, pero con un enfoque más aleatorio en la selección de divisiones. En la matriz de confusión se puede observar que para la clase ``False'' ha fallado menos que el ensemble Random Forest, pero para la clase ``True'' ha fallado más el ensemble ExtraTrees. De igual modo, este modelo ha demostrado presentar un alto rendimiento para este dataset.
 
-\ubsection{Random Subspaces}
+\subsection{Random Subspaces}
 Finalmente, se ha implementado el modelo de ensemble RRandom Subspaces. Este algoritmo es una técnica que construye un ensemble de clasificadores base (en este caso, se ha utilizado un ensemble de árboles de decisión) entrenados en subconjuntos aleatorios de características.\\
 Los hiperparámetros para este modelo son los siguientes:
 \begin{itemize}
     \item n\_estimators: este indica el número de clasificadores base en el ensemble.
     \item max\_features: este término indica la proporción de características seleccionadas para cada clasificador.
-    \item estimator\__max\_depth: es la profundidad máxima de cada árbol de decisión.
+    \item estimator\_max\_depth: es la profundidad máxima de cada árbol de decisión.
 \end{itemize}
 
 En esta ocaasión, se han generado 108 combinaciones, por lo que después de entrenar los modelos generados ha resultado que los mejores parámetros para este conjunto de datos han sido los mostrados en la Tabla \ref{tab:hiper-RS}.
@@ -726,7 +786,7 @@ En esta ocaasión, se han generado 108 combinaciones, por lo que después de ent
     \centering
     \begin{tabular}{|c|c|c|}
     \hline
-    n\_estimators & max\_features & estimator\__max\_depth \\ \hline
+    n\_estimators & max\_features & estimator\_max\_depth \\ \hline
     50 & 0.5 & None \\ \hline
     \end{tabular}
     \caption{Resultados de los mejores hiperparámetros obtenidos tras entrenar el modelo Random Subspaces.}
