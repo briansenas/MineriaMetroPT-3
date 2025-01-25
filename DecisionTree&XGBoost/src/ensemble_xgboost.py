@@ -1,17 +1,11 @@
 import os
 import sys
 from datetime import datetime
-
+from scipy.stats import randint, uniform
 import joblib
 import polars as pl
-from utils import (
-    bayesian_optimization,
-    build_structure,
-    evaluate,
-    get_xgboost_objective_func,
-    get_xgboost_space,
-)
-from xgboost import XGBClassifier
+from utils import build_structure, evaluate, perform_hyperparameter_search
+from xgboost.sklearn import XGBClassifier
 
 
 def main():
@@ -25,6 +19,7 @@ def main():
     X_train = train_df.drop("is_anomaly")
     y_train = train_df["is_anomaly"]
 
+    """
     # Perform bayesian optimization
     space = get_xgboost_space()
     folds = X_train["fold"].unique()
@@ -38,6 +33,25 @@ def main():
     model = XGBClassifier(
         objective="binary:logistic", random_state=random_state, **best_params
     )
+    """
+
+    model = XGBClassifier(random_state=random_state)
+
+    # Perform hyperparameter tuning
+    param_grid = {
+        "n_estimators": randint(50, 500),
+        "max_depth": randint(3, 10),
+        "learning_rate": uniform(0.01, 0.3),
+        "subsample": uniform(0.5, 0.5),
+        "colsample_bytree": uniform(0.5, 0.5),
+        "gamma": uniform(0, 5),
+        "min_child_weight": randint(1, 10),
+    }
+    best_score, best_params = perform_hyperparameter_search(
+        model, X_train, y_train, metric, param_grid
+    )
+    print(f"Best {metric} score: {best_score:.4f}")
+    print(f"Best parameters: {best_params}")
 
     # Fit the model with the best parameters
     model.set_params(**best_params)

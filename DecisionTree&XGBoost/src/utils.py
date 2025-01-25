@@ -1,12 +1,12 @@
 import os
 import shutil
-from typing import Any, Dict, Union
+from typing import Any, Dict, Tuple, Union
 
 import numpy as np
 import pandas as pd
 import polars as pl
 import seaborn as sns
-from hyperopt import fmin, tpe, hp, Trials, STATUS_OK
+from hyperopt import STATUS_OK, Trials, fmin, hp, tpe
 from matplotlib import pyplot as plt
 from sklearn.base import BaseEstimator
 from sklearn.metrics import (
@@ -19,6 +19,7 @@ from sklearn.metrics import (
     recall_score,
     roc_curve,
 )
+from sklearn.model_selection import RandomizedSearchCV
 from xgboost import XGBClassifier
 
 
@@ -325,3 +326,39 @@ def bayesian_optimization(
 
     print("Best hyperparameters:", best)
     return best
+
+
+def perform_hyperparameter_search(
+    model: BaseEstimator,
+    X: pl.DataFrame,
+    y: pl.Series,
+    metric: str,
+    param_grid: Dict[str, Any],
+) -> Tuple[float, Dict[str, object]]:
+    """
+    Perform hyperparameter search using RandomizedSearchCV.
+
+    Args:
+        model (BaseEstimator): The model to optimize.
+        X (pl.DataFrame): Features for training.
+        y (pl.Series): Target variable.
+        metric (str): Score metric to use.
+        param_grid (Dict[str, Any]): Parameters to search.
+
+    Returns:
+        Tuple[float, Dict[str, object]]: Best score and best parameters.
+    """
+    
+    folds = X["fold"].unique()
+
+    search = RandomizedSearchCV(
+        model,
+        param_grid,
+        cv=get_cv_iterable(folds, "fold", X),
+        scoring=metric,
+        n_jobs=-1,
+        verbose=1,
+    )
+
+    search.fit(X.drop("fold"), y)
+    return search.best_score_, search.best_params_

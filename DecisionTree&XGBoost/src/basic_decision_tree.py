@@ -1,52 +1,15 @@
 import os
 import sys
 from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import List
 
 import joblib
 import matplotlib.pyplot as plt
 import polars as pl
 import seaborn as sns
 from sklearn.base import BaseEstimator
-from sklearn.model_selection import RandomizedSearchCV
 from sklearn.tree import DecisionTreeClassifier, plot_tree
-from utils import build_structure, evaluate, get_cv_iterable
-
-
-def perform_hyperparameter_search(
-    model: BaseEstimator, X: pl.DataFrame, y: pl.Series, metric: str
-) -> Tuple[float, Dict[str, object]]:
-    """
-    Perform hyperparameter search using RandomizedSearchCV.
-
-    Args:
-        model (BaseEstimator): The model to optimize.
-        X (pl.DataFrame): Features for training.
-        y (pl.Series): Target variable.
-        metric (str): Score metric to use.
-
-    Returns:
-        Tuple[float, Dict[str, object]]: Best score and best parameters.
-    """
-    param_grid = {
-        "max_depth": [2, 3, 5, 7, 10, None],
-        "min_samples_split": [2, 5, 10, 15],
-        "min_samples_leaf": [1, 2, 4, 6],
-        "criterion": ["gini", "entropy"],
-    }
-    folds = X["fold"].unique()
-
-    search = RandomizedSearchCV(
-        model,
-        param_grid,
-        cv=get_cv_iterable(folds, "fold", X),
-        scoring=metric,
-        n_jobs=-1,
-        verbose=1,
-    )
-
-    search.fit(X.drop("fold"), y)
-    return search.best_score_, search.best_params_
+from utils import build_structure, evaluate, perform_hyperparameter_search
 
 
 def calculate_feature_importance(model: BaseEstimator, X: pl.DataFrame) -> pl.DataFrame:
@@ -124,8 +87,14 @@ def main():
     model = DecisionTreeClassifier(class_weight="balanced", random_state=random_state)
 
     # Perform hyperparameter tuning
+    param_grid = {
+        "max_depth": [2, 3, 5, 7, 10, None],
+        "min_samples_split": [2, 5, 10, 15],
+        "min_samples_leaf": [1, 2, 4, 6],
+        "criterion": ["gini", "entropy"],
+    }
     best_score, best_params = perform_hyperparameter_search(
-        model, X_train, y_train, metric
+        model, X_train, y_train, metric, param_grid
     )
     print(f"Best {metric} score: {best_score:.4f}")
     print(f"Best parameters: {best_params}")
