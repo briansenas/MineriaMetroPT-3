@@ -551,6 +551,62 @@ Por último, se asigna el pliegue 1 y 8 (elección aleatoria) como el conjunto d
 
 \section{Regresión Logística.}
 \section{Máquinas de Vectores de Soporte.}
+A continuación, se ha implementado un modelo SVM (Support Vector Machine) para trabajar con los conjuntos de datos de entrenamiento y test. Este modelo es eficaz para problemas de clasificación binaria con relaciones no lineales, especialmente cuando el número de características es elevado, como ocurre en este caso.\\
+Antes de construir este modelo, se han escalado los datasets de entrenamiento y de test aplicando la función \texttt{StandardScaler} para normalizar los datos, lo que es crucial en modelos como SVM, que son sensibles a la magnitud de las características. Seguidamente, se ha implementado la función \texttt{get\_cv\_iterable} para obtener las cuatro separaciones del conjunto de entrenamiento para poder hacer la validación cruzada. Con estos pequeños ajustes, se ha procedido a la configuración del modelo básico de SVM. \\
+
+En primer lugar, se han ajustado los siguientes hiperparámetros:
+\begin{itemize}
+    \item C: este parámetro controla la penalización por errores de clasificación.
+    \item $\gamma$: este define cómo influye una sola muestra en el modelo, lo que resulta relevante para kernels no lineales.
+    \item Kernel: también se elige entre dos tipos de kernel, ``rbf'' o ``linear''.
+\end{itemize}
+
+Tras la inicialización de estos parámetros, se ha utilizado \texttt{GridSearchCV} para realizar una búsqueda exhaustiva de combinaciones de los hiperparámetros y se ha realizado la validación cruzada utilizando los folds predefinidos para evaluar cada combinación. De esta manera, se han probado 72 combinaciones, cuya mejor combinación ha resultado ser la mostrada en la Tabla \ref{tab:hiper-SVM}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+     \hline
+     C & $\gamma$ & kernel \\ \hline
+     10 & auto & rbf \\ \hline
+    \end{tabular}
+    \caption{Mejores hiperparámetros tras entrenar el modelo SVM.}
+    \label{tab:hiper-SVM}
+\end{table}
+
+Una vez entrenado y obtenido el mejor modelo (como se pueder observar, se ha obtenido un kernel no lineal), se ha evaluado este modelo de SVM con el conjunto de prueba. Así pues, se han reflejado estos resultados en la Tabla \ref{tab:res-SVM}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Clase & Precisión & Recall & F1-score & Soporte \\ \hline \hline
+    False & 0.99 & 1.00 & 1.00 & 1279 \\ \hline
+    True & 0.98 &  0.86 & 0.92 & 74 \\ \hline
+    macro avg & 0.99 & 0.93 & 0.96 & 1353 \\ \hline
+    weighted avg & 0.99 &  0.99 & 0.99 & 1353 \\ \hline
+    \end{tabular}
+    \caption{Reesultados obtenidos de la evaluación del modelo SVM con el conjunto de prueba.}
+    \label{tab:res-SVM}
+\end{table}
+
+Como se puede observar en esta Tabla, se han obtenido unos resultados deprecisión y recall para la clase ``False'' (no es anomalía) excelentes, lo que tiene sentido, al ser la mayoría de los datos no anómalos, ha aprendido mejor el modelo a identificar los valores que no son anomalías.\\
+Por otro lado, la clase ``True'' (sí es anomalía) presenta un recall más bajo (86\%), lo que indica que 10 anomalías no fueron detectadas como tal.\\
+A pesar de esto, el modelo alcanza un F1-score de 92\% en la clase ``True'', lo que refleja un buen balance entre precisión y recall.
+
+Para finalizar, se ha generado la matriz de confusión que se puede observar en la Tabla \ref{tab:confusion-SVM}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|}
+    \hline
+    1278 \hspace{8mm} 1 \\ 
+    10 \hspace{10mm} 64 \\ \hline
+    \end{tabular}
+    \caption{Matriz de confusión para el modelo implementado de SVM.}
+    \label{tab:confusion-SVM}
+\end{table}
+
+En conclusión, el modelo SVM tiene un desempeño excelente con una precisión general del 99\%. Para la clase ``True'' presenta mayor dificultad de detección debido a la desbalanceada proporción entre las clases (muchos más datos no anómalos que anómalos).
+
+
 \section{Clasificador Bayesiano (Brian Sena).}
 
 \section{Árboles de clasificación.}
