@@ -614,5 +614,156 @@ En conclusión, el modelo SVM tiene un desempeño excelente con una precisión g
 \section{Stacking (Brian Sena).}
 \section{AdaBoost.}
 \section{Bagging.}
+
+Por útlimo, se han trabajado con diferentes técnicas de Bagging para la clasificación de este dataset. En concreto, se han implementado tres ensembles; Random Forest, ExtraTrees y Random subspaces. Para estos algoritmos no es necesario escalar los datos, por lo que no se ha hecho ningún preprocesameinto adicional.
+
+\subsection{Random Forest}
+Random Forest es un ensemble de árboles de decisión entrenados con subconjuntos de datos obtenidos mediante muestreo con reemplazo (bootstrap).\\
+Estos árboles se construyen de forma independiente y las predicciones para clasificación se combinan mediante el voto mayoritario.\\
+Para este modelo, se han tomado los siguientes hiperparámetros:
+\begin{itemize}
+    \item n\_estimators: este parámetro es el número de árboles.
+    \item max\_depth: este hace referencia a la profundidad máxima de los árboles.
+    \item min\_samples\_split: este es el número mínimo de muestras requeridas para dividir un nodo.
+    \item min\_samples\_leaf: es el número mínimo de muestras en una hoja.
+\end{itemize}
+
+De esta manera, se han generado 324 combinaciones y se han entrenado para obtener el mejor modelo. Así pues, la mejor combinación se ha mostrado en la Tabla \ref{tab:hiper_RF}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    n\_estimators &  max\_depth & min\_samples\_split & min\_samples\_leaf \\ \hline
+    100 & None & 2 & 4 \\ \hline
+    \end{tabular}
+    \caption{Resultados de los mejores hiperparámetros obtenidos tras entrenar el modelo Random Forest.}
+    \label{tab:hiper_RF}
+\end{table}
+
+Tras haber entrenado y haber obtenido la mejor combinación de los hiperparámetros, se ha evaluado el modelo con el conjunto de prueba, obteniéndose los resultados de la clasificación de la Tabla \ref{tab:res-RF}. También se ha mostrado la matriz de confusión en la Tabla \ref{tab:confusion-RF}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Clase & Precisión & Recall & F1-score & Soporte \\ \hline\hline
+    False & 1.00 & 1.00 & 1.00 & 1279 \\ \hline
+    True & 0.96 & 0.95 & 0.95 & 74 \\ \hline
+    macro avg & 0.98 & 0.97 & 0.97 & 1353 \\ \hline
+    weighted avg & 0.99 & 0.99 & 0.99 & 1353 \\ \hline
+    \end{tabular}
+    \caption{Informe de clasificación tras la evaluación del mejor modelo de Random Forest para el conjunto de prueba.}
+    \label{tab:res-RF}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|}
+    \hline
+    1276 \hspace{8mm} 3 \\
+    4 \hspace{12mm} 70 \\ \hline
+    \end{tabular}
+    \caption{Mattriz de confusión obtenida para el ensemble Random Forest.}
+    \label{tab:confusion-RF}
+\end{table}
+
+Analizando los resultados de estas Tablas, se puede comprobar que hay un mejor equilibrio entre la precisión y el recall. Por otro lado, aunque los resultados son notablemnte buenos, para la clase ``True'' (es anomalía), se hann obtenido peores resultados comparados con los arrojados para la clase ``False'' (no es anomalía), lo que puede explicarse debido al desbalanceo presente entre estas clases (74 frente a 1279).
+
+Se puede concluir entonces que este modelo es muy buena opción para tratar estos datos debido a la robustez de este ensembble.
+
+\subsection{ExtraTrees}
+El ensemble ExtraTrees (Extremely Randomized Trees) es similar al algoritmo Random Forest, pero introduce más aleatoriedad durante la construcción de los árboles al seleccionar divisiones aleatorias en las características.\\
+En  este caso, los hhiperparámetros que se han estudiado han sido los mismos que para el caso de Random Forest, pero en esta ocasión la aleatoriedad en las divisiones es mayor. Una vez entrenadas las 64 combinaciones posbiles, los mejores parámetros se han reflejado en la Tabla \ref{tab:hiper-ET}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+    \hline
+    n\_estimators &  max\_depth & min\_samples\_split & min\_samples\_leaf \\ \hline
+    200 & 10 & 5 & 2 \\ \hline
+    \end{tabular}
+    \caption{Resultados de los mejores hiperparámetros obtenidos tras entrenar el modelo ExtraTrees.}
+    \label{tab:hiper-ET}
+\end{table}
+
+Con este modelo ya entrenado, se ha evaluado con el dataset de test, mostrando en la Tabla \ref{tab:res-ET} el reporte de clasificación y en la Tabla \ref{tab:confusion-ET} la matriz de confusión.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Clase & Precisión & Recall & F1-score & Soporte \\ \hline \hline
+    False & 1.00 & 1.00 & 1.00 & 1279 \\ \hline
+    True & 0.97 & 0.93 & 0.95 &  74 \\ \hline
+     macro avg & 0.98 & 0.97 & 0.97 & 1353 \\ \hline
+    weighted avg  & 0.99 & 0.99 & 0.99 & 1353 \\ \hline
+    \end{tabular}
+    \caption{Informe de clasificación tras la evaluación del mejor modelo de ExtraTrees para el conjunto de prueba.}
+    \label{tab:res-ET}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|}
+    \hline
+    1277 \hspace{8mm} 2 \\
+    5 \hspace{12mm} 69 \\ \hline
+    \end{tabular}
+    \caption{Matriz de confusión generada tras la evaluación del ExtraTrees.}
+    \label{tab:confusion-ET}
+\end{table}
+
+Observando estas dos Tablas, se puede comprobar que este modelo arroja resultados muy similares a Random Forest, pero con un enfoque más aleatorio en la selección de divisiones. En la matriz de confusión se puede observar que para la clase ``False'' ha fallado menos que el ensemble Random Forest, pero para la clase ``True'' ha fallado más el ensemble ExtraTrees. De igual modo, este modelo ha demostrado presentar un alto rendimiento para este dataset.
+
+\ubsection{Random Subspaces}
+Finalmente, se ha implementado el modelo de ensemble RRandom Subspaces. Este algoritmo es una técnica que construye un ensemble de clasificadores base (en este caso, se ha utilizado un ensemble de árboles de decisión) entrenados en subconjuntos aleatorios de características.\\
+Los hiperparámetros para este modelo son los siguientes:
+\begin{itemize}
+    \item n\_estimators: este indica el número de clasificadores base en el ensemble.
+    \item max\_features: este término indica la proporción de características seleccionadas para cada clasificador.
+    \item estimator\__max\_depth: es la profundidad máxima de cada árbol de decisión.
+\end{itemize}
+
+En esta ocaasión, se han generado 108 combinaciones, por lo que después de entrenar los modelos generados ha resultado que los mejores parámetros para este conjunto de datos han sido los mostrados en la Tabla \ref{tab:hiper-RS}.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    n\_estimators & max\_features & estimator\__max\_depth \\ \hline
+    50 & 0.5 & None \\ \hline
+    \end{tabular}
+    \caption{Resultados de los mejores hiperparámetros obtenidos tras entrenar el modelo Random Subspaces.}
+    \label{tab:hiper-RS}
+\end{table}
+
+A continuación, se ha evaluado este algoritmo con el conjunto de prueba, obteniéndose los resultados de la Tabla \ref{tab:res-RS} y la matriz de confusión de la Tabla \ref{tab:confusion-RS}. 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Clase & Precisión & Recall & F1-score & Soporte \\ \hline\hline
+    False & 1.00& 1.00 &  1.00 & 1279 \\ \hline
+    True & 0.96 & 0.92 & 0.94 &  74 \\ \hline 
+    macro avg &  0.98 & 0.96 & 0.97 & 1353 \\ \hline
+    weighted avg & 0.99 &  0.99 & 0.99 & 1353 \\ \hline
+    \end{tabular}
+    \caption{Informe de clasificación tras la evaluación del mejor modelo de Random Subspaces para el conjunto de prueba}
+    \label{tab:res-RS}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|}
+    \hline
+    1276 \hspace{8mm} 3 \\
+    6 \hspace{12mm} 68 \\ \hline 
+    \end{tabular}
+    \caption{Matriz de confusión para el modelo Random Subspaces.}
+    \label{tab:confusion-RS}
+\end{table}
+
+Aunque este ensemble también arroja unos resultados excelentes, para la clase ``True'' ha obtenidos los peores resultados para la precisión y el recall, comparados con los dos anteriores; esto se ha podido comprobar también en la matriz de confusión. El empeoramiento de la precisión en esta clase puede deberse a la selección aleatoria de características.
+
+Finalmente, los modelos Random Forest y ExtraTrees son más confiables que este último algoritmo, puesto que tienen un valor de F1-score del 95\%, superior al F1-score que se ha obtenido en el modelo Random Subspaces.
+
+
+
 \printbibliography
 \end{document}
