@@ -243,85 +243,75 @@ Se tienen más de un millón de observaciones correspondientes a distintos momen
 No hay nulos, por lo que no se requiere ningún tratamiento especial (como imputaciones) para ese tipo de casos. Lo que sí ocurre es que hay pequeños intervalos de tiempo vacíos, sin datos, pero estos no aparecen como nulos, solo pasa de un intervalo a otro en un salto temporal que se salta parte del tiempo. En ese caso se ha considerado válido eliminar ese espacio temporal por ser mínimo y por no tener información de si podría haber anomalía o no. Otra opción habría sido imputar ese espacio temporal con datos sintéticos que repliquen los datos del espacio temporal anterior, pero se consideró más válido eliminar ese intervalo.
 
 \subsection{Transformaciones y Visualizaciones}
-Se procede a transformar la variable de \textit{timestamp} en un formato más cómodo para poder filtrarlo.
-
-
-\begin{lstlisting}[language=Python]
-    data = data.with_columns(
-        pl.col("timestamp").str.strptime(pl.Datetime, 
-        format="%Y-%m-%d %H:%M:%S")
-    )
-\end{lstlisting}
-
-Se estandarizan los datos para poder visualizarlos y que las escalas no afecten demasiado a estas visualizaciones.No se normaliza por la desviación típica, ya que se desea conservar la variación de los datos. De esta forma no se pierde su relación original de escalas.
+Se estandarizan los datos para poder visualizarlos y que las escalas no afecten demasiado a estas visualizaciones. No se normaliza por la desviación típica, ya que se desea conservar la variación de los datos. De esta forma no se pierde su relación original de escalas.
 
 \begin{figure}[htp]
     \centering
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Caudal_impulses.png}
-        \caption*{(a) Caudal Impulses}
+        \caption*{Caudal Impulses}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{COMP.png}
-        \caption*{(b) COMP}
+        \caption*{COMP}
     \end{minipage}
     \vspace{0.5em} % Adds space between rows
 
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{DV_eletric.png}
-        \caption*{(c) DV Electric}
+        \caption*{DV Electric}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{DV_pressure.png}
-        \caption*{(d) DV Pressure}
+        \caption*{DV Pressure}
     \end{minipage}
     \vspace{0.5em}
 
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{H1.png}
-        \caption*{(e) H1}
+        \caption*{H1}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{LPS.png}
-        \caption*{(f) LPS}
+        \caption*{LPS}
     \end{minipage}
     \vspace{0.5em}
 
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Motor_current.png}
-        \caption*{(g) Motor Current}
+        \caption*{Motor Current}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{MPG.png}
-        \caption*{(h) MPG}
+        \caption*{MPG}
     \end{minipage}
     \vspace{0.5em}
 
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Oil_level.png}
-        \caption*{(g) Oil level}
+        \caption*{Oil level}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Oil_temperature.png}
-        \caption*{(h) Oil temperature}
+        \caption*{Oil temperature}
     \end{minipage}
     \vspace{0.5em}
-\caption{Variables en rangos donde hay anomalías.}
+\caption{Variables en rangos donde hay anomalías. Se observa cambios bruscos en la naturaleza cíclica del uso habitual del motor de compresión.}
 \label{fig:anomaly_in_variables}
 \end{figure}
 
@@ -330,59 +320,59 @@ Se estandarizan los datos para poder visualizarlos y que las escalas no afecten 
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Pressure_switch.png}
-        \caption*{(g) Pressure switch}
+        \caption*{Pressure switch}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Reservoirs.png}
-        \caption*{(h) Reservoirs}
+        \caption*{Reservoirs}
     \end{minipage}
     \vspace{0.5em}
 
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Towers.png}
-        \caption*{(g) Towers}
+        \caption*{Towers}
     \end{minipage}
     \hfill
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{TP2.png}
-        \caption*{(h) TP2}
+        \caption*{TP2}
     \end{minipage}
     \vspace{0.5em}
 
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{TP3.png}
-        \caption*{(h) TP3}
+        \caption*{TP3}
     \end{minipage}
 
-    \caption{Variables en rangos donde hay anomalías 2.}
+    \caption{Variables en rangos donde hay anomalías.}
     \label{fig:anomaly_in_variables2}
 \end{figure}
 
-Como puede observarse en la figura \ref{fig:anomaly_in_variables} y en la figura \ref{fig:anomaly_in_variables2}, se visualizan los rangos donde según expertos, se produjo una anomalía. Gracias a esto es posible observar con facilidad que tipo de forma toma cada variable cuando una anomalía ocurre.
+Como puede observarse en la Figura~\ref{fig:anomaly_in_variables} y en la Figura~\ref{fig:anomaly_in_variables2}, se visualizan los rangos donde según expertos, se produjo una anomalía. Gracias a esto es posible observar con facilidad que tipo de forma toma cada variable cuando una anomalía ocurre.
 
 \begin{figure}[htp]
     \centering
-    \subfloat{\includegraphics[width=\textwidth]{all_anomalies.png}}
-    \caption{Todas las variables en rango anómalos.}
+    \subfloat{\includegraphics[width=0.7\textwidth]{all_anomalies.png}}
+    \caption{Todas las variables en rango anómalos. Se observa la naturaleza cíclica de todas las variables debido a que iteraccionan en conjunto.}
     \label{fig:all_anomalies}
 \end{figure}
 
-En la figura \ref{fig:all_anomalies} se muestran todas las anomalías (centradas gracias al estandarizado sobre la media) y cómo se comportan en un rango anómalo. Se preserva la varianza de cada una de ellas de forma que pueda observarse su rango de valores completo real.
+En la Figura~\ref{fig:all_anomalies} se muestran todas las anomalías (centradas gracias al estandarizado sobre la media) y cómo se comportan en un rango anómalo. Se preserva la varianza de cada una de ellas de forma que pueda observarse su rango de valores completo real.
 
 \begin{figure}[htp]
     \centering
-    \subfloat{\includegraphics[width=\textwidth]{all_normal.png}}
+    \subfloat{\includegraphics[width=0.7\textwidth]{all_normal.png}}
     \caption{Todas las variables en rangos normales.}
     \label{fig:all_normal}
 \end{figure}
 
 
-Si se muestra otro rango temporal, se puede observar el comportamiento esperado de cada variable. De hecho, se podría intuir que son series de naturaleza \textbf{estacionaria}. Este fenómeno puede observarse en la figura \ref{fig:all_normal}.
+Si se muestra otro rango temporal, se puede observar el comportamiento esperado de cada variable. De hecho, se podría intuir que son series de naturaleza \textbf{estacionaria}. Este fenómeno puede observarse en la Figura~\ref{fig:all_normal}.
 Una serie estacionaria es una secuencia de datos temporales cuyas propiedades estadísticas, como la media, la varianza y la autocorrelación, son constantes a lo largo del tiempo. Esto significa que su comportamiento no cambia dependiendo del momento en el que se analice, lo que facilita su modelado y predicción.
 
 \subsection{Test estadísticos}
@@ -418,7 +408,7 @@ Ya que se tienen muchos datos, hacer la prueba de \textit{adfuller} con todos en
     \label{tab:stationary_results}
 \end{table}
 
-Como puede verse en la figura \ref{tab:stationary_results} ....
+Como puede verse en la Tabla~\ref{tab:stationary_results}.
 
 \subsection{Preprocesamiento}
 
@@ -433,7 +423,7 @@ El \textbf{segundo enfoque} se basa en la \textbf{incorporación de información
 
 Es razonable suponer que ciertos fallos no se manifiestan mediante cambios abruptos en los valores de los sensores, sino que se desarrollan progresivamente. Por ejemplo, una disminución gradual del nivel de aceite, que ocurre a una velocidad mayor de la esperada, podría ser suficiente para señalar el inicio de un fallo. En estos casos, el análisis de los valores temporales sería esencial, ya que permite detectar anomalías antes de que los valores de los sensores alcancen niveles extremos. Esto, en un contexto predictivo, posibilitaría adelantarse al fallo y, potencialmente, evitarlo.
 
-No obstante, este enfoque no está exento de desafíos. Una de las principales limitaciones es que los valores anómalos pueden quedar "opacados" o diluidos por el resto de los datos dentro de la ventana temporal, lo que podría dificultar la identificación precisa de anomalías. Sin embargo, el equipo considera que la información temporal ofrece una ventaja significativa en la detección temprana de fallos, por lo que ha decidido centrar su trabajo en este enfoque. A continuación, se abordarán con mayor detalle las características de este modelo y cómo se gestionan los posibles problemas derivados de la utilización de información temporal en el proceso de detección.
+No obstante, este enfoque no está exento de desafíos. Una de las principales limitaciones es que los valores anómalos pueden quedar ``opacados'' o diluidos por el resto de los datos dentro de la ventana temporal, lo que podría dificultar la identificación precisa de anomalías. Sin embargo, el equipo considera que la información temporal ofrece una ventaja significativa en la detección temprana de fallos, por lo que ha decidido centrar su trabajo en este enfoque. A continuación, se abordarán con mayor detalle las características de este modelo y cómo se gestionan los posibles problemas derivados de la utilización de información temporal en el proceso de detección.
 
 \subsubsection{Definición de la ventana deslizante}
 
@@ -443,17 +433,17 @@ valores para apagado son inferiores a 0.05, veáse la Figura~\ref{fig:Visualizac
 
 \begin{figure}[htp]
         \centering
-        \subfloat{\includegraphics[width=\textwidth]{VisualizacionDatos.png}}
+        \subfloat{\includegraphics[width=0.7\textwidth]{VisualizacionDatos.png}}
         \caption{Observamos los datos y los valores de la presión en el panel neumático (TP3, línea azul) y la corriente del motor (línea roja).}
         \label{fig:VisualizacionDatos}
 \end{figure}
 
 Se han recogido los resultados en la Tabla~\ref{tab:TiempoCiclo}. La mediana se calcula sobre los intervalos de tiempo no anómalos. No obstante, 
-aunque el conjunto de datos no presenta valores pérdidos en ninguna de las columnas, sí que presenta saltos temporales. Los datos se mostrean cada 10 segundos, 
+aunque el conjunto de datos no presenta valores pérdidos en ninguna de las columnas, sí que presenta saltos temporales. Los datos de los sensores se mostrean cada 10 segundos, 
 pero se ha encontrado saltos temporales de incluso días, véase Figura~\ref{fig:VentanaDeslizante}. Se planteó la posibilidad de interpolar los datos, pero dada la naturaleza 
-del problema, serie temporal cíclica pero con intervalos distintos, es difícil obtener resultados prometedores sin la posibilidad de ``ensuciar'' la calidad de los datos.
+del problema, serie temporal pseudo-cíclica pero con intervalos distintos, es difícil obtener resultados prometedores para saltos grandes sin la posibilidad de ``ensuciar'' la calidad de los datos.
 Por ello, se ha calculado el tiempo mediano de ciclo de motor tras eliminar los saltos temporales. Para comprobar, se ha calculado también la mediana 
-para todos intervalos sin anomalías de la Tabla~\ref{tab:Reportes}. Los valores obtenidos están en las cercanías del especificado en la Tabla~\ref{tab:TiempoCiclo}.
+para todos intervalos sin anomalías de la Tabla~\ref{tab:Reportes}. Los valores obtenidos están muy cerca del especificado en la Tabla~\ref{tab:TiempoCiclo}.
 
 \begin{table}[htp]
     \centering
@@ -473,7 +463,7 @@ Se puede observar la asignación de grupos en la Figura~\ref{fig:VentanaDeslizan
 
 \begin{figure}[htp]
         \centering
-        \subfloat{\includegraphics[width=\textwidth]{VentanaDeslizante.png}}
+        \subfloat{\includegraphics[width=0.7\textwidth]{VentanaDeslizante.png}}
         \caption{Observamos los grupos asignados de utilizar 2 veces el tiempo de ciclo.}
         \label{fig:VentanaDeslizante}
 \end{figure}
@@ -481,7 +471,7 @@ Se puede observar la asignación de grupos en la Figura~\ref{fig:VentanaDeslizan
 
 Durante el análisis EDA y prepración del conjunto de datos de entrenamiento y evaluación se han recogido nuevas anomalías, veáse la Tabla~\ref{tab:EventosRaros} y Figura~\ref{fig:EventosRaros}.
 Sería interesante volver a consultar con un experto del campo para que valide dichas anomalías. No obstante, presentan un perfil suficientemente cercano al de las anomalías clasificadas.
-Por ello, consideramos oportuno la inclusión de dichos ejemplos como anomalías para ayudar a paliar el bajo número de ejemplo de casos positivos.
+Por ello, consideramos oportuno la inclusión de dichos ejemplos como anomalías para ayudar a resolver el problema del bajo número de ejemplo de casos positivos.
 
 \begin{table}[htp]
     \centering
@@ -507,20 +497,20 @@ Por ello, consideramos oportuno la inclusión de dichos ejemplos como anomalías
 
 \begin{figure}[htp]
         \centering
-        \subfloat{\includegraphics[width=\textwidth]{EjemploRaro1.png}}\\
-        \subfloat{\includegraphics[width=\textwidth]{EjemploRaro2.png}}
+        \subfloat{\includegraphics[width=0.7\textwidth]{EjemploRaro1.png}}\\
+        \subfloat{\includegraphics[width=0.7\textwidth]{EjemploRaro2.png}}
         \caption{Ejemplo de nuevos intervalos anómalos encontrados. Observamos valores constantes o fluctuaciones fuera de lo habitual para el motor apagado o encendido.}
         \label{fig:EventosRaros}
 \end{figure}
 
 Tras observar y analizar el conjunto de datos, seguimos un acercamiento similar a~\cite{PredictiveMaintenance,FailureDetection} para tratar a la serie temporal, 
 se ha optado por la transformación de los intervalos de las ventanas deslizante en obtener el promedio, mínimo, máximo y varianza de cada variable durante el intervalo de tiempo mostreado. 
-Para resolver el problema de saltos temporales se ha eliminado aquellos conjuntos en los que se estiman estas variables para un número de puntos inferior a $(\textrm{tiempo de ciclo}) / 10 = 126$. Ya que esos ejemplos 
+Para resolver el problema de saltos temporales, se ha eliminado aquellos conjuntos en los que se estiman estas variables para un número de puntos inferior a $(\textrm{tiempo de ciclo}) / 10 = 126$. Ya que esos ejemplos 
 son estimados con menos puntos que el tiempo de activación del motor, lo cuál puede generar estimaciones del promedio y varianza sub-óptimos.
 
 \subsubsection{Generación de conjuntos}
 
-Una vez determinado la ventana deslizante y las características a extraer, se generar las diferentes instancias y dividirlas en los conjuntos de entrenamiento y evaluación. Se debe determinar por tanto si un intervalo de la ventana deslizante es una anomalía o no, para lo cuál es utilizado se utilizado un criterio de votación en el cuál gana la mayoría.
+Una vez determinado la ventana deslizante y las características a extraer, se genera las diferentes instancias y se divide en los conjuntos de entrenamiento y evaluación. Se debe determinar por tanto si un intervalo de la ventana deslizante es una anomalía o no, para lo cuál es utilizado se utilizado un criterio de votación en el cuál gana la mayoría.
 
 Uno de los aspectos cruciales a considerar en este enfoque es la similitud de los datos generada por la ventana deslizante en ciertos momentos. Por ejemplo, en el caso de anomalías cuya duración se extiende por un periodo de tiempo considerable, como un día completo (por ejemplo, de 6/05/2020 10:00 a 6/05/2020 23:59), se generan ventanas de 21 minutos en cada iteración. Esto puede dar lugar a la aparición de instantes temporalmente muy similares entre sí, lo que podría influir en la evaluación de los modelos de detección de anomalías.
 
@@ -528,9 +518,9 @@ Una situación problemática podría ocurrir si las ventanas se distribuyeran de
 
 \begin{figure}[htp]
         \centering
-        \subfloat{\includegraphics[width=\textwidth]{prueba_agrupacion.jpeg}}
+        \subfloat{\includegraphics[width=0.7\textwidth]{prueba_agrupacion.jpeg}}
         \caption{Observamos la similitud de los valores de algunos sensores durante la anomalía.}
-        \label{fig:VentanaDeslizante}
+        \label{fig:PruebaAgrupacion}
 \end{figure}
 
 Para mitigar este riesgo y garantizar una evaluación más precisa y coherente, las instancias se agrupan temporalmente. De esta forma, se asegura que dos instancias pertenecientes al mismo grupo no se distribuyan entre los conjuntos de entrenamiento y test si dichos conjuntos se utilizan con fines de validación y entrenamiento. Se define un \textbf{grupo} como un conjunto de ventanas que comparten el mismo tipo (anomalía o no anomalía) y no presentan saltos temporales, es decir, no existe un periodo sin datos entre las ventanas. Este enfoque asegura que la información utilizada en el entrenamiento y la validación sea coherente y representativa, mejorando así la robustez de las evaluaciones del modelo.
@@ -538,8 +528,7 @@ Para mitigar este riesgo y garantizar una evaluación más precisa y coherente, 
 El proceso de generación de los conjuntos de datos consiste en barajar los grupos de ventanas deslizantes para asignar de forma aleatoria diferentes grupos de intervalos de tiempo en cada partición, 
 evitando así pliegues más fáciles o difíciles (obtener unos resultados más balanceados en general). Es decir, agrupamos los grupos en grupos de mayor tamaño, pero esta vez mediante la aleatoriedad y teniendo en cuanta la proporción de grupos anómalos y grupos no anómalos.
 
-Concretamente, se decide dividir los datos en 9 pliegues. 
-se estima el número de anomalías que pertenecería a cada pliegue y se genera conjuntos lo más equilibrado posible (véase la Tabla~\ref{tab:Dataset}. 
+Concretamente, se decide dividir los datos en 9 pliegues. Se estima el número de anomalías que pertenecería a cada pliegue y se genera conjuntos lo más equilibrado posible (véase la Tabla~\ref{tab:ValidacionCruzada}). 
 Por último, se asigna el pliegue 1 y 8 (elección aleatoria) como el conjunto de test. Los resultantes serán agrupado en 4 pliegues para el entrenamiento de la validación cruzada. 
 
 \begin{table}[htp]
