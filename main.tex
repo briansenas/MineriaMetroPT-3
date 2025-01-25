@@ -689,10 +689,10 @@ La matriz de confusión de ese modelo se puede observar en la Figura~\ref{fig:Ba
 
 \begin{figure}[!ht]
 \centering
-\subfloat{\includegraphics[width=0.5\textwidth]{BayesMatrix}}
-\subfloat{\includegraphics[width=0.5\textwidth]{BayesMatrixResults}}
-\caption{A la izquierda se observa la matriz de confusión de entrenamiento del mejor modelo bayesiano obtenido según validación cruzada. Es notable una cantidad importante de falsos negativos que podría ser demasiados para ser aceptados en entornos reales donde pueden incurrir en algún riesgo.
-Ese hecho se vuelve a verificar en el conjunto de evaluación final (matriz de la derecha). }
+\subfloat{\includegraphics[width=0.4\textwidth]{BayesMatrix}}
+\subfloat{\includegraphics[width=0.4\textwidth]{BayesMatrixResults}}
+\caption{A la izquierda se observa la matriz de confusión de entrenamiento del mejor modelo bayesiano obtenido según validación cruzada. Es notable la cantidad de falsos negativos, podrían ser demasiados en entornos reales donde esta equivocación puede incurrir en algún riesgo.
+Observamos un comportamiento similar en la evaluación final (derecha). }
 \label{fig:BayesMatrix}
 \end{figure}
 
@@ -742,6 +742,7 @@ Los resultados se recogen en la Tabla~\ref{tab:StackingResults} y la matriz de c
 \end{table}
 
 Los resultados del mejor modelo sobre el conjunto final de evaluación se recogen en la Tabla~\ref{tab:StackingFinalResults} y su matriz de confusión en la Figura~\ref{fig:StackingMatrix}.
+Utilizar este conjunto de modelos y un meta-modelo para modelar la iteracción entre ellos resulta ser muy eficaz para la resolución de este problema.
 
 \begin{table}[!ht]
     \centering
@@ -757,17 +758,15 @@ Los resultados del mejor modelo sobre el conjunto final de evaluación se recoge
 
 \begin{figure}[!ht]
 \centering
-\subfloat{\includegraphics[width=0.5\textwidth]{StackingMatrix}}
-\subfloat{\includegraphics[width=0.5\textwidth]{StackingMatrixResults}}
+\subfloat{\includegraphics[width=0.4\textwidth]{StackingMatrix}}
+\subfloat{\includegraphics[width=0.4\textwidth]{StackingMatrixResults}}
 \caption{A la izquierda se observa la matriz de confusión de entrenamiento del mejor modelo de apilamiento obtenido según validación cruzada. Observamos un rendimiento de casi el 100\% sobre el conjunto de entrenamiento.
 En el conjunto final de evaluación presentamos una cantidad razonable de falsos negativos.}
 \label{fig:StackingMatrix}
 \end{figure}
 
-Utilizar este conjunto de modelos y un meta-modelo para modelar la iteracción entre ellos resulta ser muy eficaz para la resolución de este problema.
 
-
-\section{Regresión Logísticas (Álvaro Santana)}
+\section{Regresión Logística (Álvaro Santana)}
 \section{Bagging (Ana Fuentes)}
 
 Por útlimo, se han trabajado con diferentes técnicas de Bagging para la clasificación de este dataset. En concreto, se han implementado tres ensembles; Random Forest, ExtraTrees y Random subspaces. Para estos algoritmos no es necesario escalar los datos, por lo que no se ha hecho ningún preprocesameinto adicional.
