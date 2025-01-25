@@ -649,23 +649,23 @@ En el caso de la experimentación con submuestreo o sobremuestreo se ha hecho us
 La primera nos permite crear un \textit{pipeline} en el cuál solo se realiza las operaciones de submuestreo o sobremuestreo en los pliegues que correspondan al conjunto de entrenamiento en el bucle de validación. 
 De esta forma, las estimaciones de la precisión no se veen afectado por estos cambios, permitiendo estimar mejor la capacidad de generalización del modelo. La segunda nos permite añadir otras operaciones si necesarias (por ejemplo una normalización) además de disponer de la implementación de los modelos.
 Se ha realizado 4 pliegues de validación. Las métricas que utilizamos para evaluar el rendimiento se han discutido en la Sección~\ref{sec:Metricas}.
-Para el clasificador bayesiano simples, el único hiperparámetro que tenemos que optimizar es el suavizado de la varianza para alargar la distribución de probabilidad de las clases.
+Para el clasificador bayesiano simples, el único hiperparámetro que tenemos que optimizar es el suavizado ($\alpha$) de la varianza para alargar la distribución de probabilidad de las clases.
 Experimentaremos con los valores espaciados linealmente desde $1e^{-11 }$ a $1e^{-7}$ con 25 valores.
 
 \begin{table}[!ht]
     \centering
-    \begin{tabular}{lcc}
+    \begin{tabular}{llc}
         \hline
         \textbf{Modelo} & \textbf{Parámetros} &\textbf{F1 Promedio} \\\hline
-        Bayesiano Simples & suavizado = $4^{-9}$ & 0.6802 \\ 
-        Bayesiano Simples + MRMR & suavizado = $1^{-8}$ & 0.6894 \\ 
-        Bayesiano Simples + CHI & suavizado = $1^{-11}$ & 0.6847 \\ 
-        Bayesiano Simples + CNN & suavizado = $4^{-9}$ & 0.7088\\ 
-        Bayesiano Simples + CNN + MRMR & suavizado = $1^{-11}$ & 0.7320 \\ 
-        Bayesiano Simples + CNN + CHI & suavizado = $2^{-8}$ & \textbf{0.7819} \\ 
-        Bayesiano Simples + Smote & suavizado = $4^{-9}$ & 0.6811 \\ 
-        Bayesiano Simples + Smote + MRMR & suavizado = $4^{-8}$ & 0.7047 \\ 
-        Bayesiano Simples + Smote + CHI & suavizado = $5^{-8}$ & 0.6865 \\ 
+        Bayesiano & $\alpha$ = $4^{-9}$ & 0.6802 \\ 
+        Bayesiano + MRMR & $\alpha$ = $1^{-8}$ & 0.6894 \\ 
+        Bayesiano + CHI & $\alpha$ = $1^{-11}$ & 0.6847 \\ 
+        Bayesiano + CNN & K=10, $\alpha$ = $4^{-9}$ & 0.7088\\ 
+        Bayesiano + CNN + MRMR & K=10, $\alpha$ = $1^{-11}$ & 0.7320 \\ 
+        Bayesiano + CNN + CHI & K=10, $\alpha$ = $2^{-8}$ & \textbf{0.7819} \\ 
+        Bayesiano + Smote & $\alpha$ = $4^{-9}$ & 0.6811 \\ 
+        Bayesiano + Smote + MRMR & $\alpha$ = $4^{-8}$ & 0.7047 \\ 
+        Bayesiano + Smote + CHI & $\alpha$ = $5^{-8}$ & 0.6865 \\ 
         \hline
     \end{tabular}
     \caption{Resultados promedios obtenidos sobre las diferentes combinaciones de modelos bayesianos. Se observa que equilibrar el conjunto de datos es crucial para las mejoras del modelo. Además, la selección de variables realmente significativas, eliminando redundancia también facilita la generalización del mismo. }
@@ -680,7 +680,7 @@ La matriz de confusión de ese modelo se puede observar en la Figura~\ref{fig:Ba
     \begin{tabular}{lcccc}
         \hline
         \textbf{Modelo} & \textbf{Parámetros} &\textbf{Precisión} &\textbf{Sensibilidad} &\textbf{F1} \\\hline
-        Bayesiano + CNN + CHI & suavizado = $2^{-8}$ & 0.8084 & 0.8396 & 0.8231\\ 
+        Bayesiano + CNN + CHI & $\alpha$ = $2^{-8}$ & 0.8084 & 0.8396 & 0.8231\\ 
         \hline
     \end{tabular}
     \caption{Resultados finales obtenidos en el conjunto de test con el mejor modelo bayesiano.}
@@ -721,17 +721,20 @@ Para experimentar con el ajuste de la distribución de las clases, al igual que 
 Aunque la idea es modelar diferentes características en cada modelo, y que sus errores sean independientes, se ha realizado una prueba adicional utilizando los mejores parámetros obtenidos en las experimentaciones previas de cada modelo individual.
 \subsection{Detalles de experimentación y resultados} 
 Se ha hecho uso de las mismas librerías definidas en la Sección~\ref{sec:ExpBayes}. Los mismos 4 pliegues de validación cruzada y las métricas de la Sección~\ref{sec:Metricas}.
-Los hiperparámetros que se buscan para cada modelo serán similares a los que se han utilizado en las diferentes secciones. Los resultados se recogen en la Tabla~\ref{tab:StackingResults} y la matriz de confusión de entrenamiento en la Figura~\ref{fig:StackingMatrix}.
+Los hiperparámetros que se buscan para cada modelo serán similares a los que se han utilizado en las diferentes secciones.
+Para el modelo de soporte vectorial se buscarán los valores de regularización (C) entre 0.1, 1 y 10.
+Para el árbol de decisión se ha experimentado tanto con criterio de corte (ct) de ``gini'' y ``entropía''. También se estudia profundidad ilimitada frente a máxima profundidad equivalente a 10.
+Los resultados se recogen en la Tabla~\ref{tab:StackingResults} y la matriz de confusión de entrenamiento en la Figura~\ref{fig:StackingMatrix}.
 
 \begin{table}[!ht]
     \centering
     \begin{tabular}{llc}
         \hline
         \textbf{Modelo} & \textbf{Parámetros} &\textbf{F1 Promedio} \\\hline
-        Stacking & SVC\_C=10, NB\_s = $1e^{-9}$, DT\_c=``entropía''& 0.9376\\ 
-        Stacking + SMOTE & SVC\_C=10, NB\_s = $1e^{-9}$, DT\_c=``gini''& 0.9309 \\ 
-        Stacking + CNN & SVC\_C=10, NB\_s = $1e^{-9}$, DT\_c=``gini'' & 0.8726 \\ 
-        Stacking + OPT & svc\_c=10, nb\_s = $1e^{-9}$, dt\_c=``entropía''& \textbf{0.9438} \\ 
+        Stacking & C=10, $\alpha$ = $1e^{-9}$, ct=``entropía''& 0.9376\\ 
+        Stacking + SMOTE & C=10, $\alpha$ = $1e^{-9}$, ct=``gini''& 0.9309 \\ 
+        Stacking + CNN & C=10, $\alpha$ = $1e^{-9}$, ct=``gini'' & 0.8726 \\ 
+        Stacking + OPT & C=10, $\alpha$ = $1e^{-9}$, ct=``entropía''& \textbf{0.9438} \\ 
         \hline
     \end{tabular}
     \caption{Resultados promedios obtenidos sobre las diferentes combinaciones de modelos de apilamiento. El término OPT hace alusión a un modelo de apilamiento en el cuál cada modelo base está utilizando la mejor configuración posible (El bayesiano se entrena con un submuestreo por CNN y características seleccionadas por chi-cuadrado). Se observa una posible saturación del conjunto de entrenamiento.} 
@@ -745,7 +748,7 @@ Los resultados del mejor modelo sobre el conjunto final de evaluación se recoge
     \begin{tabular}{lcccc}
         \hline
         \textbf{Modelo} & \textbf{Parámetros} &\textbf{Precisión} &\textbf{Sensibilidad} &\textbf{F1} \\\hline
-        Stacking + OPT & C=10, s=$1e^{-9}$, ct=``entropía'' & 0.9889 & 0.9387 & 0.9623\\ 
+        Stacking + OPT & C=10, $\alpha$=$1e^{-9}$, ct=``entropía'' & 0.9889 & 0.9387 & 0.9623\\ 
         \hline
     \end{tabular}
     \caption{Resultados finales obtenidos en el conjunto de test con el mejor modelo de apilamiento.}
