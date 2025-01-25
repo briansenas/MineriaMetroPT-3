@@ -379,7 +379,7 @@ Una serie estacionaria es una secuencia de datos temporales cuyas propiedades es
 Se realizan pruebas estadísticas a las series temporales con el objetivo de determinar si son estacionarias. En este contexto, si el valor crítico de la prueba es mayor que el valor estadístico obtenido, se concluye que la serie no es estacionaria.
 Entre las pruebas utilizadas, destaca la prueba de \textit{Dickey-Fuller Aumentada} (ADF), un test estadístico diseñado para evaluar la presencia de una raíz unitaria en una serie temporal. La existencia de una raíz unitaria indica que la serie no es estacionaria.
 
-Ya que se tienen muchos datos, hacer la prueba de \textit{adfuller} con todos en cada columna no es viable. Por tanto, de manera aleatoria se escogen muestras de tramos aleatorios de cada variable. De esta manera se puede evaluar si la serie es estacionaria en gran parte de sus tramos y deducir si la serie completa es posible que sea estacionaria.
+Ya que se tienen muchos datos, hacer la prueba de \textit{adfuller} con todos en cada columna no es viable. Por tanto, de manera aleatoria se escogen muestras de tramos aleatorios de cada variable. De esta manera se puede evaluar si la serie es estacionaria en gran parte de sus tramos y deducir si la serie completa es posible que sea estacionaria (veáse la Tabla~\ref{tab:stationary_results}).
 
 \begin{table}[htp]
     \centering
@@ -408,7 +408,6 @@ Ya que se tienen muchos datos, hacer la prueba de \textit{adfuller} con todos en
     \label{tab:stationary_results}
 \end{table}
 
-Como puede verse en la Tabla~\ref{tab:stationary_results}.
 
 \subsection{Preprocesamiento}
 
@@ -552,10 +551,11 @@ Por último, se asigna el pliegue 1 y 8 (elección aleatoria) como el conjunto d
 
 \section{Regresión Logística.}
 \section{Máquinas de Vectores de Soporte.}
-\section{Clasificador Bayesiano.}
+\section{Clasificador Bayesiano (Brian Sena).}
+
 \section{Árboles de clasificación.}
 \section{Gradient Boosting.}
-\section{Stacking.}
+\section{Stacking (Brian Sena).}
 \section{AdaBoost.}
 \section{Bagging.}
 \printbibliography
