@@ -563,7 +563,7 @@ Cada una de estas métricas aporta una perspectiva única sobre cómo el modelo 
 
 Es por ello que en las diferentes experimentaciones se ha hecho uso de esas métricas. La evaluación es el promedio del rendimiento de los modelos en los diferentes pliegues de validación. 
 
-\section{Máquinas de Vectores de Soporte}
+\section{Máquinas de Vectores de Soporte (Ana Fuentes)}
 A continuación, se ha implementado un modelo SVM (Support Vector Machine) para trabajar con los conjuntos de datos de entrenamiento y test. Este modelo es eficaz para problemas de clasificación binaria con relaciones no lineales, especialmente cuando el número de características es elevado, como ocurre en este caso.\\
 Antes de construir este modelo, se han escalado los datasets de entrenamiento y de test aplicando la función \texttt{StandardScaler} para normalizar los datos, lo que es crucial en modelos como SVM, que son sensibles a la magnitud de las características. Seguidamente, se ha implementado la función \texttt{get\_cv\_iterable} para obtener las cuatro separaciones del conjunto de entrenamiento para poder hacer la validación cruzada. Con estos pequeños ajustes, se ha procedido a la configuración del modelo básico de SVM. \\
 
@@ -650,8 +650,8 @@ La primera nos permite crear un \textit{pipeline} en el cuál solo se realiza la
 De esta forma, las estimaciones de la precisión no se veen afectado por estos cambios, permitiendo estimar mejor la capacidad de generalización del modelo. La segunda nos permite añadir otras operaciones si necesarias (por ejemplo una normalización) además de disponer de la implementación de los modelos.
 Se ha realizado 4 pliegues de validación. Las métricas que utilizamos para evaluar el rendimiento se han discutido en la Sección~\ref{sec:Metricas}.
 
-\section{Árboles de clasificación}
-\section{Gradient Boosting}
+\section{Árboles de clasificación (Miguel García)}
+\section{Gradient Boosting (Miguel García)}
 \section{Stacking (Brian Sena)}
 El \textit{Stacking} (apilamiento) es una técnica de aprendizaje automático que combina las predicciones de múltiples modelos base para construir un modelo final más robusto y preciso. 
 A diferencia de otros métodos de ensamblado, en el \textit{Stacking} se utiliza un modelo de nivel superior, conocido como meta-modelo, que aprende a combinar las predicciones de los modelos base.
@@ -672,8 +672,9 @@ Para experimentar con el ajuste de la distribución de las clases, al igual que 
 Aunque la idea es modelar diferentes características en cada modelo, y que sus errores sean independientes, se ha realizado una prueba adicional utilizando los mejores parámetros obtenidos en las experimentaciones previas de cada modelo individual.
 \subsection{Detalles de experimentación y resultados} 
 Se ha hecho uso de las mismas librerías definidas en la Sección~\ref{sec:ExpBayes}. Los mismos 4 pliegues de validación cruzada y las métricas de la Sección~\ref{sec:Metricas}.
-\section{AdaBoost}
-\section{Bagging}
+\section{AdaBoost (Álvaro Santana)}
+\section{Regresión Logísticas (Álvaro Santana)}
+\section{Bagging (Ana Fuentes)}
 
 Por útlimo, se han trabajado con diferentes técnicas de Bagging para la clasificación de este dataset. En concreto, se han implementado tres ensembles; Random Forest, ExtraTrees y Random subspaces. Para estos algoritmos no es necesario escalar los datos, por lo que no se ha hecho ningún preprocesameinto adicional.
 
