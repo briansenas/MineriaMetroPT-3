@@ -176,7 +176,9 @@ Caudal impulses  & Numérico      & 0.000         & 1.000       & 1.000       & 
     \label{tab:DatosBasicos}
 \end{table}
 
-Las variables que analógicas que observamos son:
+Este conjunto de datos tiene como objetivo principal mejorar la detección de fallos y la predicción de mantenimiento. 
+Aunque no contiene etiquetas directas, se dispone de informes de fallos que permiten evaluar la efectividad de los algoritmos de detección de anomalías, predicción de fallos y estimación de RUL (véase la Tabla~\ref{tab:Reportes}).
+De las variables presentes, las siete primeras son analógicas y las demás digitales. La descripción de cada una viene dada en la siguiente lista:
 \begin{enumerate}
     \item TP2 (bar): La medición de la presión en el compresor.
     \item TP3 (bar): La medición de la presión generada en el panel neumático.
@@ -185,9 +187,6 @@ Las variables que analógicas que observamos son:
     \item Reservorios (bar): La medición de la presión aguas abajo de los reservorios, que debería ser cercana a la presión del panel neumático (TP3).
     \item Corriente del Motor (A): La medición de la corriente de una fase del motor trifásico; presenta valores cercanos a 0A (cuando está apagado), 4A (cuando trabaja sin carga), 7A (cuando trabaja bajo carga) y 9A (cuando empieza a trabajar).
     \item Temperatura del Aceite (ºC): La medición de la temperatura del aceite en el compresor.
-\end{enumerate}
-Las variables digitales que observamos son: 
-\begin{enumerate}
     \item COMP: La señal de la válvula de admisión de aire del compresor; está activa cuando no hay admisión de aire, lo que indica que el compresor está apagado o funcionando sin carga.
     \item DV eléctrico: La señal que controla la válvula de salida del compresor; está activa cuando el compresor funciona bajo carga e inactiva cuando el compresor está apagado o funcionando sin carga.
     \item TORRES: La señal que define la torre responsable de secar el aire y la torre responsable de drenar la humedad eliminada del aire; cuando no está activa, indica que la torre uno está funcionando; cuando está activa, indica que la torre dos está en operación.
@@ -197,10 +196,6 @@ Las variables digitales que observamos son:
     \item Nivel de Aceite: La señal que detecta el nivel de aceite en el compresor; está activa cuando el nivel de aceite está por debajo de los valores esperados.
     \item Impulso de Caudal: La señal que cuenta los pulsos generados por la cantidad absoluta de aire que fluye desde la APU hacia los reservorios.
 \end{enumerate}
-
-
-Este conjunto de datos tiene como objetivo principal mejorar la detección de fallos y la predicción de mantenimiento. 
-Aunque no contiene etiquetas directas, se dispone de informes de fallos que permiten evaluar la efectividad de los algoritmos de detección de anomalías, predicción de fallos y estimación de RUL (véase la Tabla~\ref{tab:Reportes}).
 
 \begin{table}[htp]
     \centering
@@ -234,9 +229,6 @@ Aunque no contiene etiquetas directas, se dispone de informes de fallos que perm
     Nos permite evaluar la capacidad de detección anomalías de nuestros modelo.}
     \label{tab:Reportes}
 \end{table}
-
-Además, se recomienda utilizar el primer mes de datos para entrenar modelos, dejando el resto para las pruebas, permitiendo también la formación incremental si fuera necesario.
-
 
 \section{Análisis Exploratorio de Datos}
 Se tienen más de un millón de observaciones correspondientes a distintos momentos en el tiempo que capturan datos de distintos sensores. Todas las variables son continuas a excepción del \textit{timestamp}, que es la fecha de registro de cada valor en las variables.
@@ -311,12 +303,7 @@ Se estandarizan los datos para poder visualizarlos y que las escalas no afecten 
         \caption*{Oil temperature}
     \end{minipage}
     \vspace{0.5em}
-\caption{Variables en rangos donde hay anomalías. Se observa cambios bruscos en la naturaleza cíclica del uso habitual del motor de compresión.}
-\label{fig:anomaly_in_variables}
-\end{figure}
 
-\begin{figure}[htp]
-    \centering
     \begin{minipage}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Pressure_switch.png}
@@ -328,6 +315,12 @@ Se estandarizan los datos para poder visualizarlos y que las escalas no afecten 
         \includegraphics[width=\textwidth]{Reservoirs.png}
         \caption*{Reservoirs}
     \end{minipage}
+\caption{Variables en rangos donde hay anomalías. Se observa cambios bruscos en la naturaleza cíclica del uso habitual del motor de compresión.}
+\label{fig:anomaly_in_variables}
+\end{figure}
+
+\begin{figure}[htp]
+    \centering
     \vspace{0.5em}
 
     \begin{minipage}[b]{0.45\textwidth}
@@ -358,7 +351,7 @@ Como puede observarse en la Figura~\ref{fig:anomaly_in_variables} y en la Figura
 \begin{figure}[htp]
     \centering
     \subfloat{\includegraphics[width=0.7\textwidth]{all_anomalies.png}}
-    \caption{Todas las variables en rango anómalos. Se observa la naturaleza cíclica de todas las variables debido a que iteraccionan en conjunto.}
+    \caption{Todas las variables en funcionamiento normal y durante anomalías. }
     \label{fig:all_anomalies}
 \end{figure}
 
@@ -367,7 +360,7 @@ En la Figura~\ref{fig:all_anomalies} se muestran todas las anomalías (centradas
 \begin{figure}[htp]
     \centering
     \subfloat{\includegraphics[width=0.7\textwidth]{all_normal.png}}
-    \caption{Todas las variables en rangos normales.}
+    \caption{Todas las variables en rangos normales. Se observa la naturaleza cíclica de todas las variables debido a que iteraccionan en conjunto.}
     \label{fig:all_normal}
 \end{figure}
 
@@ -577,9 +570,9 @@ En primer lugar, se han ajustado los siguientes hiperparámetros:
 Tras la inicialización de estos parámetros, se ha utilizado \texttt{GridSearchCV} para realizar una búsqueda exhaustiva de combinaciones de los hiperparámetros y se ha realizado la validación cruzada utilizando los folds predefinidos para evaluar cada combinación. De esta manera, se han probado 72 combinaciones, cuya mejor combinación ha resultado ser la mostrada en la Tabla \ref{tab:hiper-SVM}.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|}
+    \begin{tabular}{ccc}
      \hline
-     C & $\gamma$ & kernel \\ \hline
+     \textbf{C} & $\gamma$ & \textbf{kernel} \\ \hline
      10 & auto & rbf \\ \hline
     \end{tabular}
     \caption{Mejores hiperparámetros tras entrenar el modelo SVM.}
@@ -589,15 +582,15 @@ Tras la inicialización de estos parámetros, se ha utilizado \texttt{GridSearch
 Una vez entrenado y obtenido el mejor modelo (como se pueder observar, se ha obtenido un kernel no lineal), se ha evaluado este modelo de SVM con el conjunto de prueba. Así pues, se han reflejado estos resultados en la Tabla \ref{tab:res-SVM}.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|c|c|}
+    \begin{tabular}{ccccc}
     \hline
-    Clase & Precisión & Recall & F1-score & Soporte \\ \hline \hline
-    False & 0.99 & 1.00 & 1.00 & 1279 \\ \hline
-    True & 0.98 &  0.86 & 0.92 & 74 \\ \hline
-    macro avg & 0.99 & 0.93 & 0.96 & 1353 \\ \hline
+    \textbf{Clase} & \textbf{Precisión} & \textbf{Recall} & \textbf{F1-score} & \textbf{Soporte} \\ \hline
+    False & 0.99 & 1.00 & 1.00 & 1279 \\ 
+    True & 0.98 &  0.86 & 0.92 & 74 \\ 
+    macro avg & 0.99 & 0.93 & 0.96 & 1353 \\ 
     weighted avg & 0.99 &  0.99 & 0.99 & 1353 \\ \hline
     \end{tabular}
-    \caption{Reesultados obtenidos de la evaluación del modelo SVM con el conjunto de prueba.}
+    \caption{Resultados obtenidos de la evaluación del modelo SVM con el conjunto de prueba.}
     \label{tab:res-SVM}
 \end{table}
 
@@ -785,9 +778,9 @@ Para este modelo, se han tomado los siguientes hiperparámetros:
 De esta manera, se han generado 324 combinaciones y se han entrenado para obtener el mejor modelo. Así pues, la mejor combinación se ha mostrado en la Tabla \ref{tab:hiper_RF}.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{cccc}
     \hline
-    n\_estimators &  max\_depth & min\_samples\_split & min\_samples\_leaf \\ \hline
+    \textbf{n\_estimators} &  \textbf{max\_depth} & \textbf{min\_samples\_split} & \textbf{min\_samples\_leaf} \\ \hline
     100 & None & 2 & 4 \\ \hline
     \end{tabular}
     \caption{Resultados de los mejores hiperparámetros obtenidos tras entrenar el modelo Random Forest.}
@@ -797,12 +790,12 @@ De esta manera, se han generado 324 combinaciones y se han entrenado para obtene
 Tras haber entrenado y haber obtenido la mejor combinación de los hiperparámetros, se ha evaluado el modelo con el conjunto de prueba, obteniéndose los resultados de la clasificación de la Tabla \ref{tab:res-RF}. También se ha mostrado la matriz de confusión en la Tabla \ref{tab:confusion-RF}.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|c|c|}
+    \begin{tabular}{ccccc}
     \hline
-    Clase & Precisión & Recall & F1-score & Soporte \\ \hline\hline
-    False & 1.00 & 1.00 & 1.00 & 1279 \\ \hline
-    True & 0.96 & 0.95 & 0.95 & 74 \\ \hline
-    macro avg & 0.98 & 0.97 & 0.97 & 1353 \\ \hline
+    \textbf{Clase} & \textbf{Precisión} & \textbf{Recall} & \textbf{F1-score} & \textbf{Soporte} \\ \hline
+    False & 1.00 & 1.00 & 1.00 & 1279 \\ 
+    True & 0.96 & 0.95 & 0.95 & 74 \\ 
+    macro avg & 0.98 & 0.97 & 0.97 & 1353 \\ 
     weighted avg & 0.99 & 0.99 & 0.99 & 1353 \\ \hline
     \end{tabular}
     \caption{Informe de clasificación tras la evaluación del mejor modelo de Random Forest para el conjunto de prueba.}
@@ -811,10 +804,10 @@ Tras haber entrenado y haber obtenido la mejor combinación de los hiperparámet
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|}
+    \begin{tabular}{|cc|}
     \hline
-    1276 \hspace{8mm} 3 \\
-    4 \hspace{12mm} 70 \\ \hline
+    1276 & 3 \\
+    4 & 70 \\ \hline
     \end{tabular}
     \caption{Mattriz de confusión obtenida para el ensemble Random Forest.}
     \label{tab:confusion-RF}
@@ -829,9 +822,9 @@ El ensemble ExtraTrees (Extremely Randomized Trees) es similar al algoritmo Rand
 En  este caso, los hhiperparámetros que se han estudiado han sido los mismos que para el caso de Random Forest, pero en esta ocasión la aleatoriedad en las divisiones es mayor. Una vez entrenadas las 64 combinaciones posbiles, los mejores parámetros se han reflejado en la Tabla \ref{tab:hiper-ET}.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{cccc}
     \hline
-    n\_estimators &  max\_depth & min\_samples\_split & min\_samples\_leaf \\ \hline
+    \textbf{n\_estimators} &  \textbf{max\_depth} & \textbf{min\_samples\_split} & \textbf{min\_samples\_leaf} \\ \hline
     200 & 10 & 5 & 2 \\ \hline
     \end{tabular}
     \caption{Resultados de los mejores hiperparámetros obtenidos tras entrenar el modelo ExtraTrees.}
@@ -841,12 +834,12 @@ En  este caso, los hhiperparámetros que se han estudiado han sido los mismos qu
 Con este modelo ya entrenado, se ha evaluado con el dataset de test, mostrando en la Tabla \ref{tab:res-ET} el reporte de clasificación y en la Tabla \ref{tab:confusion-ET} la matriz de confusión.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|c|c|}
+    \begin{tabular}{ccccc}
     \hline
-    Clase & Precisión & Recall & F1-score & Soporte \\ \hline \hline
-    False & 1.00 & 1.00 & 1.00 & 1279 \\ \hline
-    True & 0.97 & 0.93 & 0.95 &  74 \\ \hline
-     macro avg & 0.98 & 0.97 & 0.97 & 1353 \\ \hline
+    \textbf{Clase} & \textbf{Precisión} & \textbf{Recall} & \textbf{F1-score} & \textbf{Soporte} \\ \hline
+    False & 1.00 & 1.00 & 1.00 & 1279 \\ 
+    True & 0.97 & 0.93 & 0.95 &  74 \\ 
+     macro avg & 0.98 & 0.97 & 0.97 & 1353 \\ 
     weighted avg  & 0.99 & 0.99 & 0.99 & 1353 \\ \hline
     \end{tabular}
     \caption{Informe de clasificación tras la evaluación del mejor modelo de ExtraTrees para el conjunto de prueba.}
@@ -855,10 +848,10 @@ Con este modelo ya entrenado, se ha evaluado con el dataset de test, mostrando e
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|}
+    \begin{tabular}{|cc|}
     \hline
-    1277 \hspace{8mm} 2 \\
-    5 \hspace{12mm} 69 \\ \hline
+    1277 & 2 \\
+    5 & 69 \\ \hline
     \end{tabular}
     \caption{Matriz de confusión generada tras la evaluación del ExtraTrees.}
     \label{tab:confusion-ET}
@@ -878,9 +871,9 @@ Los hiperparámetros para este modelo son los siguientes:
 En esta ocaasión, se han generado 108 combinaciones, por lo que después de entrenar los modelos generados ha resultado que los mejores parámetros para este conjunto de datos han sido los mostrados en la Tabla \ref{tab:hiper-RS}.
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|}
+    \begin{tabular}{ccc}
     \hline
-    n\_estimators & max\_features & estimator\_max\_depth \\ \hline
+    \textbf{n\_estimators} &  \textbf{max\_features} & \textbf{estimator\_max\_depth } \\ \hline
     50 & 0.5 & None \\ \hline
     \end{tabular}
     \caption{Resultados de los mejores hiperparámetros obtenidos tras entrenar el modelo Random Subspaces.}
@@ -890,13 +883,14 @@ En esta ocaasión, se han generado 108 combinaciones, por lo que después de ent
 A continuación, se ha evaluado este algoritmo con el conjunto de prueba, obteniéndose los resultados de la Tabla \ref{tab:res-RS} y la matriz de confusión de la Tabla \ref{tab:confusion-RS}. 
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|c|c|c|c|}
+    \begin{tabular}{ccccc}
     \hline
-    Clase & Precisión & Recall & F1-score & Soporte \\ \hline\hline
-    False & 1.00& 1.00 &  1.00 & 1279 \\ \hline
-    True & 0.96 & 0.92 & 0.94 &  74 \\ \hline 
-    macro avg &  0.98 & 0.96 & 0.97 & 1353 \\ \hline
-    weighted avg & 0.99 &  0.99 & 0.99 & 1353 \\ \hline
+    \textbf{Clase} & \textbf{Precisión} & \textbf{Recall} & \textbf{F1-score} & \textbf{Soporte} \\ \hline
+    False & 1.00& 1.00 &  1.00 & 1279 \\ 
+    True & 0.96 & 0.92 & 0.94 &  74 \\ 
+    macro avg &  0.98 & 0.96 & 0.97 & 1353 \\ 
+    weighted avg & 0.99 &  0.99 & 0.99 & 1353 \\ 
+    \hline
     \end{tabular}
     \caption{Informe de clasificación tras la evaluación del mejor modelo de Random Subspaces para el conjunto de prueba}
     \label{tab:res-RS}
@@ -904,10 +898,10 @@ A continuación, se ha evaluado este algoritmo con el conjunto de prueba, obteni
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{|c|}
+    \begin{tabular}{|cc|}
     \hline
-    1276 \hspace{8mm} 3 \\
-    6 \hspace{12mm} 68 \\ \hline 
+    1276 & 3 \\
+    6 & 68 \\ \hline 
     \end{tabular}
     \caption{Matriz de confusión para el modelo Random Subspaces.}
     \label{tab:confusion-RS}
@@ -916,8 +910,6 @@ A continuación, se ha evaluado este algoritmo con el conjunto de prueba, obteni
 Aunque este ensemble también arroja unos resultados excelentes, para la clase ``True'' ha obtenidos los peores resultados para la precisión y el recall, comparados con los dos anteriores; esto se ha podido comprobar también en la matriz de confusión. El empeoramiento de la precisión en esta clase puede deberse a la selección aleatoria de características.
 
 Finalmente, los modelos Random Forest y ExtraTrees son más confiables que este último algoritmo, puesto que tienen un valor de F1-score del 95\%, superior al F1-score que se ha obtenido en el modelo Random Subspaces.
-
-
 
 \printbibliography
 \end{document}
