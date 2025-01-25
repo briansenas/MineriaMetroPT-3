@@ -80,14 +80,14 @@
 %% Edit these as appropriate
 \newcommand\course{Ciencia de Datos e Ingenieria de Computadores}
 \newcommand\hwnumber{1}                  % <-- homework number
-\newcommand\NetIDa{Brian}           % <-- NetID of person #1
-\newcommand\NetIDb{Sena Simons}           % <-- NetID of person #1
+\newcommand\NetIDa{}           % <-- NetID of person #1
+\newcommand\NetIDb{}           % <-- NetID of person #1
 %
 \pagestyle{fancyplain}
 \headheight 35pt
 \lhead{\NetIDa}
-\lhead{\NetIDa\\\NetIDb}                 % <-- Comment this line out for problem sets (make sure you are person #1)
-\chead{\hspace{-2cm}\textbf{\large Preprocesamiento y Clasificación}}
+%\lhead{\NetIDa\\\NetIDb}                 % <-- Comment this line out for problem sets (make sure you are person #1)
+\lhead{\textbf{\large Preprocesamiento y Clasificación}}
 \rhead{\course \\ \today}
 \lfoot{\scriptsize\LaTeX}
 \cfoot{\hyperlink{Indice}{Volver al índice}}
@@ -322,7 +322,7 @@ se ha optado por la transformación de los intervalos de las ventanas deslizante
 Para resolver el problema de saltos temporales se ha eliminado aquellos conjuntos en los que se estiman estas variables para un número de puntos inferior a $(\textrm{tiempo de ciclo}) / 10 = 126$. Ya que esos ejemplos 
 son estimados con menos puntos que el tiempo de activación del motor, lo cuál puede generar estimaciones del promedio y varianza sub-óptimos.
 
-Una vez determinado la ventana deslizante y las características a extraer, podemos generar el conjunto de entrenamiento y evaluación. 
+Una vez determinado la ventana deslizante y las características a extraer, se generar el conjunto de entrenamiento y evaluación. 
 Para determinar si un intervalo de la ventana deslizante es una anomalía o no se ha utilizado un criterio de votación en el cuál gana la mayoría.
 Para generar los conjuntos de datos, primeramente barajamos las ventanas deslizantes para asignar de forma aleatoria diferentes intervalos de tiempo en cada partición, 
 evitando así pliegues más fáciles o difíciles (obtener unos resultados más balanceados en general). A continuación, se decide dividir los datos en 9 pliegues. 
