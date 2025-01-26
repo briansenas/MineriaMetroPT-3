@@ -149,7 +149,7 @@ def build_structure():
 
 
 def evaluate_model(
-    y_true: pl.Series, y_pred: pl.Series, type_model: str
+    y_true: pl.Series, y_pred: pl.Series, type_model: str, prefix: str
 ) -> Dict[str, float]:
     """
     Evaluate the model performance using various metrics and return the classification report.
@@ -172,7 +172,7 @@ def evaluate_model(
     report = classification_report(y_true, y_pred, output_dict=True)
     report_df = pd.DataFrame(report).transpose()
 
-    report_df.to_csv(f"data/{type_model}_classification_report.csv")
+    report_df.to_csv(f"data/{prefix}{type_model}_classification_report.csv")
 
     return metrics
 
@@ -251,7 +251,7 @@ def evaluate(
 
     type_model = "xgboost" if isinstance(model, XGBClassifier) else "decision_tree"
 
-    metrics = evaluate_model(y, y_pred, type_model)
+    metrics = evaluate_model(y, y_pred, type_model, prefix)
     print(f"{prefix.replace('_', ' - ').upper()}Evaluation Metrics:", metrics)
 
     # Save ROC plot

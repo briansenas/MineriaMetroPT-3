@@ -529,13 +529,13 @@ Por último, se asigna el pliegue 1 y 8 (elección aleatoria) como el conjunto d
     \hline
     \textbf{Pliegue} & \textbf{Negativo} & \textbf{Positivo} & \textbf{Conjunto}\\ \hline
         0 & 635 & 31 & Evaluación \\ 
-        1 & 635 & 31 & Etrenamiento pliegue 1 \\ 
-        2 & 635 & 31 & Etrenamiento pliegue 2\\ 
-        3 & 635 & 31 & Etrenamiento pliegue 3\\ 
-        4 & 635 & 31 & Etrenamiento pliegue 4\\ 
-        5 & 635 & 31 & Etrenamiento pliegue 3\\ 
-        6 & 635 & 31 & Etrenamiento pliegue 2 \\
-        7 & 638 & 31 & Etrenamiento pliegue 1\\ 
+        1 & 635 & 31 & Entrenamiento pliegue 1 \\ 
+        2 & 635 & 31 & Entrenamiento pliegue 2\\ 
+        3 & 635 & 31 & Entrenamiento pliegue 3\\ 
+        4 & 635 & 31 & Entrenamiento pliegue 4\\ 
+        5 & 635 & 31 & Entrenamiento pliegue 3\\ 
+        6 & 635 & 31 & Entrenamiento pliegue 2 \\
+        7 & 638 & 31 & Entrenamiento pliegue 1\\ 
         8 & 641 & 43 & Evaluación \\ \hline
     \end{tabular}
     \caption{Distribución de los 9 pliegues generados. Se asigna de forma aleatoria el 1 y 8 a test. Se agrupan los demás hasta forma 4 pliegues usando el primer y último de los restantes: 0 y 7, 2 y 6, 5 y 3, 4.}
@@ -579,7 +579,7 @@ Para implementar el algoritmo SVM, se ha utilizado la librería ``\textit{sklear
 \end{itemize}
 
 Para conseguir el mejor modelo, se han entrenado las 72 combinaciones posibles generadas y se ha realizado la validación cruzada, separando en 4 plieques el conjunto de entrenamiento (esto se ha explicado en el apartado \ref{sec:Metricas}). De esta forma, la mejor combinación ha resultado ser la mostrada en la Tabla \ref{tab:hiper-SVM}.
-\begin{table}[H]
+\begin{table}[htp]
     \centering
     \begin{tabular}{ccc|c}
      \hline
@@ -591,7 +591,7 @@ Para conseguir el mejor modelo, se han entrenado las 72 combinaciones posibles g
 \end{table}
 
 Una vez entrenado y obtenido el mejor modelo (como se pueder observar, se ha obtenido un kernel no lineal), se ha evaluado este modelo de SVM con el conjunto de prueba. Así pues, se han reflejado estos resultados en la Tabla \ref{tab:res-SVM}.
-\begin{table}[H]
+\begin{table}[htp]
     \centering
     \begin{tabular}{ccccc}
     \hline
@@ -610,7 +610,7 @@ Por otro lado, la clase ``True'' (sí es anomalía) presenta un recall más bajo
 A pesar de esto, el modelo alcanza un F1-score de 92\% en la clase ``True'', lo que refleja un buen balance entre precisión y recall.
 
 Para finalizar, se ha generado la matriz de confusión que se puede observar en la Tabla \ref{tab:confusion-SVM}.
-\begin{table}[H]
+\begin{table}[htp]
     \centering
     \begin{tabular}{|c|}
     \hline
@@ -656,7 +656,7 @@ Se ha realizado 4 pliegues de validación. Las métricas que utilizamos para eva
 Para el clasificador bayesiano simples, el único hiperparámetro que tenemos que optimizar es el suavizado ($\alpha$) de la varianza para alargar la distribución de probabilidad de las clases.
 Experimentaremos con los valores espaciados linealmente desde $1e^{-11 }$ a $1e^{-7}$ con 25 valores.
 
-\begin{table}[!ht]
+\begin{table}[htp]
     \centering
     \begin{tabular}{llc}
         \hline
@@ -679,7 +679,7 @@ El mejor modelo sería la combinación de submuestreo con CNN y selección de ca
 La matriz de confusión de ese modelo se puede observar en la Figura~\ref{fig:BayesMatrix}. Los resultados sobre el conjunto final de evaluación con este modelo se pueden observar en la Tabla~\ref{tab:BayesFinalResults}, con su matriz de confusión correspondiente en la Figura~\ref{fig:BayesMatrix}.
 
 
-\begin{table}[!ht]
+\begin{table}[htp]
     \centering
     \begin{tabular}{lcccc}
         \hline
@@ -691,7 +691,7 @@ La matriz de confusión de ese modelo se puede observar en la Figura~\ref{fig:Ba
     \label{tab:BayesFinalResults}
 \end{table}
 
-\begin{figure}[!ht]
+\begin{figure}[htp]
 \centering
 \subfloat{\includegraphics[width=0.4\textwidth]{BayesMatrix}}
 \subfloat{\includegraphics[width=0.4\textwidth]{BayesMatrixResults}}
@@ -795,7 +795,7 @@ Donde:
 
 La precisión es especialmente útil en problemas donde los \textbf{true positives} son críticos y los \textbf{false positives} tienen un costo asociado. En este caso, captar anomalías es un ejemplo donde los \textbf{TP} son esenciales y los \textbf{FP} pueden tener un costo, ya que detectar una falsa anomalía en este caso puede llevar a la toma de decisiones como revisiones asociadas a un mal gasto.
 
-\begin{table}
+\begin{table}[htp]
     \centering
     \begin{tabular}{ll}
         \hline
@@ -812,6 +812,65 @@ La precisión es especialmente útil en problemas donde los \textbf{true positiv
 Se pueden observar los mejores parámetros encontrados para el árbol de decisión en la tabla \ref{tab:hyper_param_decision_tree}. Hay que tener en cuenta que los árboles son muy variantes, como se ha explicado anteriormente, por lo que cada ejecución puede variar significativamente de parámetros, sobre todo si se usa \textit{Random Search} y sin semilla para la reproducibilidad. Los experimentos lanzados dan, pese a la variabilidad, resultados muy similares.
 
 \subsection{Resultados}
+
+\begin{table}[htp]
+    \centering
+    \begin{tabular}{lcccc}
+        \hline
+        & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\ \hline
+        False & 0.9976 & 0.9945 & 0.9961 & 1279 \\
+        True & 0.9103 & 0.9595 & 0.9342 & 74 \\ \hline
+        Accuracy & \multicolumn{4}{c}{0.9926} \\
+        Macro Avg & 0.9540 & 0.9770 & 0.9651 & 1353 \\
+        Weighted Avg & 0.9929 & 0.9926 & 0.9927 & 1353 \\ \hline
+    \end{tabular}
+    \caption{Reporte de resultados en \textit{test}.}
+    \label{tab:results_decision_tree_test}
+\end{table}
+
+\begin{table}[htp]
+    \centering
+    \begin{tabular}{lcccc}
+        \hline
+        & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\ \hline
+        False & 1.0000 & 0.9960 & 0.9980 & 4445 \\
+        True & 0.9234 & 1.0000 & 0.9602 & 217 \\ \hline
+        Accuracy & \multicolumn{4}{c}{0.9961} \\
+        Macro Avg & 0.9617 & 0.9980 & 0.9791 & 4662 \\
+        Weighted Avg & 0.9964 & 0.9961 & 0.9962 & 4662 \\ \hline
+    \end{tabular}
+    \caption{Reporte de resultados en \textit{training}.}
+    \label{tab:results_decision_tree_training}
+\end{table}
+
+\begin{figure}[htp]
+    \centering
+    \subfloat{\includegraphics[width=0.9\textwidth]{feature_importance.png}}
+    \caption{Visualización de importancia de cada característica dado el árbol de decisión entrenado.}
+    \label{fig:feature_importance}
+\end{figure}
+
+\begin{figure}[htp]
+    \centering
+    \subfloat{\includegraphics[width=0.5\textwidth]
+    {test_decision_tree_confusion_matrix_decision_tree.png}}
+    \subfloat{\includegraphics[width=0.5\textwidth]{decision_tree_confusion_matrix_decision_tree.png}}
+    \caption{Matriz de confusión de los resultados obtenidos.}
+    \label{fig:cm_decision_tree}
+\end{figure}
+
+Tal y como se puede observar en los reportes \ref{tab:results_decision_tree_training} y \ref{tab:results_decision_tree_test} los resultados son muy buenos. El árbol ha sido capaz de reconocer la gran mayoría de anomalías. Obviamente el \textit{accuracy} es prácticamente del $100\%$ ya que hay que tener en cuenta que casi todas las instancias son normales, por lo que discernir este tipo de observaciones es mucho más fácil. En \textit{test} el modelo es capaz de discernir casi todas las anomalías, alcanzando un porcentaje de precisión del $91\%$. En las matrices de confusión definidas en la figura \ref{fig:cm_decision_tree} puede verse como los falsos positivos son mínimos, y la mayoría de predicciones sobre anomalías son verdaderos positivos.
+
+Una característica importante y muy relevante de los árboles de decisión es que son capaces de extraer información sobre la relevancia de cada característica. Esto es visible en \ref{fig:feature_importance}, donde se ve que la variable más relevante para el árbol ha sido \textit{Towers\_mean}.
+
+\begin{figure}[htp]
+    \centering
+    \subfloat{\includegraphics[width=0.9\textwidth]{tree_visualization.png}}
+    \caption{Conjunto de reglas del árbol de decisión entrenado.}
+    \label{fig:decision_tree}
+\end{figure}
+
+Por visualización, también es posible extraer las reglas que constituyen el motor de inferencia de los árboles. El árbol extraído se puede analizar en la figura \ref{fig:decision_tree}
 
 \section{Gradient Boosting (Miguel García)}
 \section{Stacking (Brian Sena)}
