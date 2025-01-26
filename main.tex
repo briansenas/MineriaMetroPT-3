@@ -623,6 +623,134 @@ Para finalizar, se ha generado la matriz de confusión que se puede observar en 
 
 En conclusión, el modelo SVM tiene un desempeño excelente con una precisión general del 99\%. Para la clase ``True'' presenta mayor dificultad de detección debido a la desbalanceada proporción entre las clases (muchos más datos no anómalos que anómalos).
 
+\section{Regresión Logistica (Álvaro Santana Sánchez)}
+
+La regresión logística es un algoritmo de aprendizaje supervisado ampliamente utilizado en problemas de clasificación binaria. A diferencia de los métodos de regresión lineal, que predicen valores continuos, la regresión logística se enfoca en estimar la probabilidad de que una instancia pertenezca a una de las dos clases posibles. Este algoritmo utiliza una función logística, también conocida como sigmoide, para transformar la combinación lineal de las variables independientes en un valor entre 0 y 1, el cual representa la probabilidad de pertenecer a la clase de interés.
+
+La parte central de la regresión logística radica en su función de transformación, la función sigmoide. Esta función toma como entrada la combinación lineal de las variables independientes y produce una salida que varía entre 0 y 1 (Figura \ref{fig:funcion_sigmoide}). 
+
+\begin{figure}[H]
+        \centering
+     \subfloat{\includegraphics[width=0.7\textwidth]{imgs/funcion_sigmoide.png}}
+        \caption{Funcion sigmoide.}
+        \label{fig:funcion_sigmoide}
+\end{figure}
+
+\subsection{Preprocesamiento especifico}
+
+Además del procesamiento general realizado, para mejorar el rendimiento del algoritmo de regresión logística se proponen las siguientes modificaciones:
+
+\subsubsection{Eliminación de ruido}
+
+El ruido puede introducir sesgos en el modelo, ya que los valores atípicos o erróneos pueden influir desproporcionadamente en la función de coste de la regresión logística durante el entrenamiento, influyendo fuertemente durante la optimización del modelo. Esto puede llevar a una sobreestimación o subestimación de los parámetros del modelo, lo que dificulta además la interpretación de los resultados. 
+
+Para ello será utilizado el filtro \textit{EnsembleFilter} propuesto en clase, el cual detecta y elimina ejemplos ruidosos en un conjunto de datos utilizando un enfoque de conjunto (ensemble) de clasificadores. Combina las predicciones de varios modelos para identificar instancias mal etiquetadas o inconsistentes. Los modelos a utilizar son los siguientes: DecisionTreeClassifier, KNeighborsClassifier y LinearDiscriminantAnalysis.Los datos se dividen en 5 particiones, los clasificadores son entrenados en cada subconjunto y se cuenta cuántas veces cada instancia es clasificada incorrectamente. Finalmente el ruido es eliminado mediante el consenso, que elimina instancias clasificadas incorrectamente por todos los clasificadores. Tras la aplicación del filtro el tamaño del dataset varía según los datos de la Tabla \ref{tab:Reduccion_ruido}. Como se puede ver fueron eliminados dos 
+datos normales y 8 anomalías.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+    \hline
+    Dataset & Tipo & Count  \\ \hline \hline
+    Original & Anomalía & 209 \\ \hline
+    Modificado & Anomalía &  217 \\ \hline
+    Original & No Anomalia & 4445 \\ \hline
+    Modificado & Anomalía &  4443 \\ \hline
+    \end{tabular}
+    \caption{Tamaño de los datos antes y después del procesamiento procesados.}
+    \label{tab:Reduccion_ruido}
+\end{table}
+
+\subsubsection{Escalado de los datos}
+
+ La estandarización, realizada con \textit{StandardScaler}, es fundamental en regresión logística ya que transforma las variables para que tengan media 0 y desviación estándar 1, lo que ofrece múltiples beneficios. En primer lugar, acelera el descenso de gradiente durante el entrenamiento, haciendo que el modelo converja más rápidamente hacia una solución óptima. Además, evita sesgos en él, ya que sin estandarización, las variables con escalas más grandes podrían dominar el entrenamiento, distorsionando los coeficientes y la capacidad predictiva. También facilita la interpretación, permitiendo que los coeficientes reflejan de manera equitativa la importancia relativa de cada variable en la predicción. Por último, garantiza que las técnicas de regularización (L1 o L2) funcionen correctamente, ya que estas penalizan los coeficientes de manera proporcional, algo que solo es posible si las variables están en la misma escala. Por todo ello, la estandarización asegura un entrenamiento más eficiente, un modelo más equilibrado y resultados más generalizables.
+
+\subsubsection{Análisis de componentes principales}
+
+El Análisis de Componentes Principales es una técnica de reducción de dimensionalidad que \textit{mapea} un conjunto de variables correlacionadas en un otro conjunto en un espacio diferente. Al hacerlo, PCA ayuda a reducir la multicolinealidad entre las variables, ya que los componentes principales resultantes son combinaciones lineales de las variables originales no correlacionadas. Aplicando PCA reducimo de más de 70 características a solo 30, manteniendo la varianza explicada en un 99\%.
+
+
+\begin{figure}[H]
+        \centering
+        \subfloat{\includegraphics[width=0.7\textwidth]{imgs/pca.png}}
+        \caption{Varianza acumulada.}
+        \label{fig:funcion_sigmoide}
+\end{figure}
+
+
+\subsubsection{Hipérparámetros}
+
+Se propone un técnica de búsqueda de hiperparámetros mediante \textit{GridSearch} utilizando el siguiente grid de parámetros:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Parámetro} & \textbf{Valores} \\ \hline
+C & $10^{-3}$, $10^{-2}$, $10^{-1}$, $10^{0}$, $10^{1}$, $10^{2}$, $10^{3}$ \\ \hline
+penalty & l1, l2 \\ \hline
+class\_weight & balanced, \{0: 1, 1: 10\}, \{0: 1, 1: 20\} \\ \hline
+\end{tabular}
+\caption{Cuadrícula de hiperparámetros.}
+\label{tab:grid}
+\end{table}
+
+\begin{itemize}
+
+    \item C: Este hiper parámetro controla la regularización en el modelo,permitiendo explorar desde una regularización fuerte (valores bajos - $10^-3$) hasta una regularización débil (valores altos $10^3$). Esto ayuda a determinar el equilibrio ideal entre ajuste del modelo y penalización de los coeficientes. Los valores a probar vienen dados por una escala logarítmica de 7 puntos equiespaciados entre el máximo y mínimo comentados.
+    
+    \item penalty: Define el tipo de regularización aplicada al modelo. \textbf{l2 (Ridge)} penaliza/regulariza los coeficientes al elevarlos al cuadrado y \textbf{l1 (Lasso)} penaliza los coeficientes utilizando su valor absoluto.
+    
+    \item class\_weight: Se propone ya que ajusta la importancia de las clases en el modelo. Se prueban tres configuraciones: 'balanced': Asigna pesos inversamente proporcionales a las frecuencias de las clases, útil cuando las clases están desbalanceadas. Por otro lado se utilizan los balances \{0: 1, 1: 10\} y \{0: 1, 1: 20\}, que especifican pesos personalizados para las clases, aumentando la penalización de errores en la clase minoritaria. De esta manera se da una mayor o menor importancia a las anomalías.
+    
+\end{itemize}
+
+Tras el ajuste de hiper parámetros mediante el cross-validation propuesto por el equipo, se encuentra que para la media de f1-score con un valor 0.95, los mejores parámetros encontrados son los presentados en la Tabla \ref{tab:hiper-RegresionLogistica}.
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+     \hline
+     C & class\_weight & penalty \\ \hline
+     1000 &  \{0: 1, 1: 10\} & l1 \\ \hline
+    \end{tabular}
+    \caption{Mejores hiperparámetros tras entrenar el modelo de Regresión Logística.}
+    \label{tab:hiper-RegresionLogistica}
+\end{table}
+
+\subsubsection{Evaluación de métricas es test}
+
+Con estos parámetros se realiza el entrenamiento del modelo, para el cuál se utilizan ya si todos los datos de entrenamiento. Entrenado este se realizan las predicciones sobre test y se calculan algunas métricas, véase la Tabla \ref{tab:evaluacion_logistic}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+    Métrica & Valor  \\ \hline \hline
+    F1 & 0.91 \\ \hline
+    Recall & 0.9 \\ \hline
+    Precision & 0.93 \\ \hline
+    Accuracy & 0.99 \\ \hline
+    \end{tabular}
+    \caption{Medidas de test.}
+    \label{tab:evaluacion_logistic}
+\end{table}
+
+El modelo presenta un desempeño sobresaliente, evidenciado por una F1 de 0.91, lo que indica un buen equilibrio entre precisión (0.92) y recall (0.89). Esto significa que identifica correctamente la mayoría de los casos positivos mientras minimiza los falsos positivos. Además, su alta exactitud (0.99) desbalance de clases evidencia aún más el buen rendimiento aunque se ve afectado por el desbalance de clases. La matriz de confusión correspondiente a los anteriores valores puede verse en la Tabla \ref{tab:confusion-LR}.El modelo tiene un alto número de aciertos (1274 VP y 66 VN) y muy pocos errores (5 FN y 7 FP), lo que indica un buen rendimiento en la clasificación.
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|}
+    \hline
+    1274 \hspace{8mm} 5 \\ 
+    7 \hspace{10mm} 66 \\ \hline
+    \end{tabular}
+    \caption{Matriz de confusión para el modelo de Regresión Logística.}
+    \label{tab:confusion-LR}
+\end{table}
+
 
 \section{Clasificador Bayesiano (Brian Sena)}
 El clasificador bayesiano (\textit{Naive Bayes}) es un algoritmo de clasificación basado en el Teorema de Bayes, el cual calcula la probabilidad posterior de una clase dado un conjunto de características de entrada. 
@@ -644,14 +772,14 @@ Para implementar el \textit{Naive Bayes} de manera efectiva, es crucial preparar
 En este caso, no disponemos de variables categóricas que necesiten codificarse numéricamente ya que todas las características son numéricas y continuas. 
 Además, se ha eliminado los saltos temporales y no se dispone de valores faltantes.
 El algoritmo, dado que calcula distribuciones de probabilidad para cada clase~\cite{NaiveBayes} sin basarse en distancia, es invariante a la escala de los datos y, por ello, no necesitamos escalar los datos.
-No obstante, aunque en el pre-procesamiento definido anteriormente se ha intentado crear un conjunto de datos equilibrado, disponemos de un drástico desequilibrio debido a la baja probabilidad de anomalía del sistema.
-Es por ello que se ha incluído experimentación con métodos de submuestreo y sobremuestreo con técnicas como ``\textit{CondensedNearestNeighbour} (CNN)'' y ``\textit{SMOTE + TomekLinks} (SMOTETomek)''.
+No obstante, aunque en el preprocesamiento definido anteriormente se ha intentado crear un conjunto de datos equilibrado, disponemos de un drástico desequilibrio debido a la baja probabilidad de anomalía del sistema.
+Es por ello que se ha incluido experimentación con métodos de submuestreo y sobremuestreo con técnicas como ``\textit{CondensedNearestNeighbour} (CNN)'' y ``\textit{SMOTE + TomekLinks} (SMOTETomek)''.
 Por último, dado la primera asunción de independencia entre características se experimenta también con técnicas de selección de características, utilizando pruebas como la ``chi-cuadrado'' o ``información mutua''.
 
 \subsection{Detalles de experimentación y resultados}\label{sec:ExpBayes}
 En el caso de la experimentación con submuestreo o sobremuestreo se ha hecho uso de la librería ``\textit{imblearn}''~\cite{imblearn} y ``\textit{scikit-learn}''~\cite{sklearn}. 
-La primera nos permite crear un \textit{pipeline} en el cuál solo se realiza las operaciones de submuestreo o sobremuestreo en los pliegues que correspondan al conjunto de entrenamiento en el bucle de validación. 
-De esta forma, las estimaciones de la precisión no se veen afectado por estos cambios, permitiendo estimar mejor la capacidad de generalización del modelo. La segunda nos permite añadir otras operaciones si necesarias (por ejemplo una normalización) además de disponer de la implementación de los modelos.
+La primera nos permite crear un \textit{pipeline} en el cual solo se realiza las operaciones de submuestreo o sobremuestreo en los pliegues que correspondan al conjunto de entrenamiento en el bucle de validación. 
+De esta forma, las estimaciones de la precisión no se ve afectada por estos cambios, permitiendo estimar mejor la capacidad de generalización del modelo. La segunda nos permite añadir otras operaciones si son necesarias (por ejemplo, una normalización) además de disponer de la implementación de los modelos.
 Se ha realizado 4 pliegues de validación. Las métricas que utilizamos para evaluar el rendimiento se han discutido en la Sección~\ref{sec:Metricas}.
 Para el clasificador bayesiano simples, el único hiperparámetro que tenemos que optimizar es el suavizado ($\alpha$) de la varianza para alargar la distribución de probabilidad de las clases.
 Experimentaremos con los valores espaciados linealmente desde $1e^{-11 }$ a $1e^{-7}$ con 25 valores.
@@ -710,7 +838,7 @@ Los árboles de decisión, ya sean para regresión o clasificación, son un tipo
     \item Los nodos \textbf{hoja}, que representan la etiqueta o categoría final.
 \end{itemize}
 
-La intuición básica detrás del algoritmo es la de intentar obtener los nodos de decisión más puros posibles (maximizar), esto es, los que sean más discriminadores entre clases o los que aporten más información.
+La intuición básica detrás del algoritmo es la de intentar obtener los nodos de decisión más puros posibles (maximizar), esto es, los que sean más discriminatorios entre clases o los que aporten más información.
 
 \subsection{Parámetros}
 El principal parámetro que ha de escogerse para crear un árbol de decisión es el de la función de pérdida. Existen varias, pero las más usadas son la función de \textbf{Entropía} y la función de \textbf{Gini}.
@@ -973,10 +1101,118 @@ Al igual que en el árbol de decisión singular, con este método también es po
 
 Se muestran las gráficas de matriz de confusión en la figura \ref{fig:cm_decision_tree_xg}.
 
+\section{AdaBoost (Álvaro Santana Sánchez) }
+
+AdaBoost, o Adaptive Boosting, es un algoritmo de aprendizaje automático de la familia de métodos de ensamble avanzados, diseñado para mejorar el desempeño de clasificadores débiles combinándolos en un modelo fuerte. El proceso comienza entrenando un clasificador débil en el conjunto de datos, tras lo cual asigna mayores pesos a las muestras que fueron clasificadas incorrectamente. En las iteraciones posteriores, los clasificadores débiles subsiguientes se enfocan en corregir los errores de sus predecesores. Este ajuste adaptativo de los pesos permite que el modelo sea particularmente eficaz al abordar los ejemplos más difíciles, mejorando de manera incremental su precisión global. AdaBoost es ampliamente utilizado debido a su capacidad para reducir el error de modelos base de aprendizaje, optimizando su desempeño mediante la combinación iterativa y ponderada de múltiples clasificadores débiles. En este caso se ha utilizado el árbol de decisión con estimador dentro de AdaBoost.
+
+\subsection{Hipérparámetros}
+Se realiza la búsqueda de los mejores parámetros mediante \textit{GridSearch}. En ella se utiliza tanto parámetros del propio Árbol de decisión utilizado como los propios de AdaBoost:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Parámetro} & \textbf{Valores} \\ \hline
+estimator\_\_criterion & gini, entropy \\ \hline
+estimator\_\_splitter & best, random \\ \hline
+estimator\_\_max\_depth & 3, 5, 10 \\ \hline
+estimator\_\_min\_samples\_split & 2, 5, 10 \\ \hline
+estimator\_\_min\_samples\_leaf & 1, 2, 5 \\ \hline
+estimator\_\_class\_weight & \{0: 1, 1: 1\}, \{0: 1, 1: 10\}, \{0: 1, 1: 20\}, \{0: 1, 1: 40\}, \{0: 1, 1: 100\} \\ \hline
+n\_estimators & 1, 2, 10, 50, 100, 200 \\ \hline
+learning\_rate & 0.01, 0.1, 0.5, 1 \\ \hline
+\end{tabular}
+\caption{Cuadrícula de hiperparámetros para búsqueda.}
+\label{tab:grid}
+\end{table}
+
+\begin{itemize}
+    \item criterion (DTC) : Determina la función utilizada para medir la calidad de una división en el árbol de decisión. 
+     \begin{itemize}
+         \item gini: Índice de Gini, que mide la impureza de las particiones. 
+         \item entropy: Medida basada en la entropía, relacionada con la teoría de la información.
+     \end{itemize}
+    \item splitter (DTC): Controla el método utilizado para elegir cómo dividir los nodos:
+    \begin{itemize}
+        \item best: Selecciona la mejor división posible.
+        \item random: Elige una división aleatoria entre las mejores opciones.
+    \end{itemize}
+
+    \item max\_depth (DTC): Establece la profundidad máxima del árbol de decisión para evitar el sobreajuste (overfitting). Los valores de 3, 5 y 10 ofrecen distintas capacidades de modelado, siendo 3 más restrictivo y 10 más flexible.
+
+    \item min\_samples\_split (DTC): Determina el número mínimo de muestras requeridas para dividir un nodo interno. Con valores de 2, 5 y 10, se ajusta la complejidad del árbol; valores más altos restringen el crecimiento del árbol.
+
+    \item min\_samples\_leaf (DTC): Establece el número mínimo de muestras requeridas en una hoja del árbol. Valores de 1, 2 y 5 regulan la granularidad de las divisiones finales, evitando que las hojas contengan solo unos pocos datos, lo que puede generar overfitting.
+
+    \item n\_estimators (AdaBoost): Define el número de clasificadores débiles (árboles de decisión) a ser combinados por AdaBoost. Se prueban configuraciones con 1, 2, 10, 50, 100 y 200 clasificadores, donde un número mayor generalmente mejora el modelo, pero también aumenta la complejidad y el tiempo de entrenamiento.
+
+    \item learning\_rate (AdaBoost): Controla la velocidad de aprendizaje, regulando la contribución de cada clasificador débil al modelo final. Los valores de 0.01, 0.1, 0.5 y 1 permiten ajustar la influencia de los clasificadores en el conjunto final, con valores más bajos realizando actualizaciones más pequeñas y valores más altos acelerando el aprendizaje.
+
+    \item class\_weight: aporta mayor valor a los aciertos clase desbalanceada para favorecer las clasificación de los mismo.
+    
+\end{itemize}
+
+Tras realizar el cross validation con todas las combinaciones posibles de parámetros, aquella cuyo f1 medio supero el resto de combinaciones es la que junta los valores del estimador presentes en la Tabla \ref{tab:hiper-AdaBoostDTC} y los valores de AdaBoost presentes en la Tabla \ref{tab:hiper-AdaAdaBoost}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+     \hline
+     Criterio & max\_depth & min\_samples\_leaf & min\_samples\_split & splitter & class\_weight  \\ \hline
+     gini &  3 & 5 & 2 & best  & {0:1,1:1}\\ \hline
+    \end{tabular}
+    \caption{Mejores hiperparámetros DTC.}
+    \label{tab:hiper-AdaBoostDTC}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+     \hline
+     learning\_rate & n\_estimators  \\ \hline
+     1 &  200  \\ \hline
+    \end{tabular}
+    \caption{Mejores hiperparámetros AdaBoost.}
+    \label{tab:hiper-AdaAdaBoost}
+\end{table}
+
+\subsection{Evaluación de métricas es test}
+
+Con estos parámetros, se entrena el modelo de AdaBoost utilizando el conjunto completo de datos de entrenamiento. Después de entrenarlo, el modelo genera predicciones sobre los datos de prueba y se calculan diversas métricas, que se presentan en la Tabla \ref{tab:evaluacion_adaboost}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+    Métrica & Valor  \\ \hline \hline
+    F1 & 0.939 \\ \hline
+    Recall & 0.945 \\ \hline
+    Precision & 0.933 \\ \hline
+    Accuracy & 0.995 \\ \hline
+    \end{tabular}
+    \caption{Medidas de test.}
+    \label{tab:evaluacion_adaboost}
+\end{table}
+
+En la Tabla \ref{tab:confusion-AdaBoost} pueden verse los valores de la matriz de confusión referente a la evaluación del modelo.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|}
+    \hline
+    1274 \hspace{8mm} 5 \\ 
+    4 \hspace{10mm} 70 \\ \hline
+    \end{tabular}
+    \caption{Matriz de confusión para el modelo Ada Boost.}
+    \label{tab:confusion-AdaBoost}
+\end{table}
+
+AdaBoost es capaz de identificar la mayoría de las anomalías presentes en el problema, pero la mejora en comparación con clasificadores más simples, como la regresión logística, es marginal: apenas se obtienen 3 verdaderos positivos adicionales y 4 verdaderos negativos más (véase \ref{tab:confusion-LR}). Dado el potencial de los modelos de ensemble y la complejidad de las funciones que pueden representar, este resultado sugiere que el incremento en desempeño podría no justificar la mayor complejidad del modelo.
 \section{Stacking (Brian Sena)}
 El \textit{Stacking} (apilamiento) es una técnica de aprendizaje automático que combina las predicciones de múltiples modelos base para construir un modelo final más robusto y preciso. 
 A diferencia de otros métodos de ensamblado, en el \textit{Stacking} se utiliza un modelo de nivel superior, conocido como meta-modelo, que aprende a combinar las predicciones de los modelos base.
 El \textit{Stacking} es particularmente útil cuando diferentes modelos base capturan distintos patrones en los datos, ya que el meta-modelo puede aprovechar la diversidad para mejorar el rendimiento global. 
+
 \subsection{Asunciones de Stacking}
 \begin{itemize}
     \item \textbf{Diversidad de los modelos base}: El stacking asume que los modelos base son suficientemente diversos y que cada uno aporta información única sobre los datos. Si los modelos base son demasiado similares, su combinación puede no aportar mejoras significativas.
@@ -988,8 +1224,8 @@ El \textit{Stacking} es particularmente útil cuando diferentes modelos base cap
 Se ha utilizado como modelo base aquellos implementados en diferentes secciones. Es decir, máquina de soporte vectorial (SVM por sus siglas en inglés), árbol de decisión y clasificador bayesiano simples. 
 Los modelos son suficientemente distintos como para asumir que cada uno aportará información relevante para la resolución del problema. El árbol de decisión es capaz de modelar no-linealidades, la máquina de soporte una 
 frontera de decisión y, por último, el clasificador bayesiano las probabilidades de las clases.
-Para ello, se ha creado un pipeline específico para cada modelo para preprocesar los datos conforme sus necesidades. Por ejemplo, en el caso de las máquinas de soporte vectorial, escalar los datos. 
-No se dispone de variables categóricas ni valores faltantes, por lo cuál lo único que difiere es el la presencia (o no) del escalado y la posible selección de variables.
+Para ello, se ha creado un pipeline específico para cada modelo para preprocesar los datos conforme a sus necesidades. Por ejemplo, en el caso de las máquinas de soporte vectorial, escalar los datos. 
+No se dispone de variables categóricas ni valores faltantes, por lo cual lo único que difiere es la presencia (o no) del escalado y la posible selección de variables.
 Para el caso de los árboles no se ha realizado ningún paso previo. Para el caso de SVM, se ha añadido un escalado como paso previo. 
 Para experimentar con el ajuste de la distribución de las clases, al igual que en el clasificador bayesiano, se ha hecho experimentos con ``\textit{CondensedNearestNeighbour} (CNN)'' y ``\textit{SMOTE + TomekLinks} (SMOTETomek)''.
 Aunque la idea es modelar diferentes características en cada modelo, y que sus errores sean independientes, se ha realizado una prueba adicional utilizando los mejores parámetros obtenidos en las experimentaciones previas de cada modelo individual.
@@ -997,7 +1233,7 @@ Aunque la idea es modelar diferentes características en cada modelo, y que sus 
 Se ha hecho uso de las mismas librerías definidas en la Sección~\ref{sec:ExpBayes}. Los mismos 4 pliegues de validación cruzada y las métricas de la Sección~\ref{sec:Metricas}.
 Los hiperparámetros que se buscan para cada modelo serán similares a los que se han utilizado en las diferentes secciones.
 Para el modelo de soporte vectorial se buscarán los valores de regularización (C) entre 0.1, 1 y 10.
-Para el árbol de decisión se ha experimentado tanto con criterio de corte (ct) de ``gini'' y ``entropía''. También se estudia profundidad ilimitada frente a máxima profundidad equivalente a 10.
+Para el árbol de decisión se ha experimentado tanto con criterio de corte (ct) de ``gini'' y ``entropía''. También se estudia profundidad ilimitada frente a una máxima equivalente a 10.
 Los resultados se recogen en la Tabla~\ref{tab:StackingResults} y la matriz de confusión de entrenamiento en la Figura~\ref{fig:StackingMatrix}.
 
 \begin{table}[htp]
@@ -1040,7 +1276,6 @@ En el conjunto final de evaluación presentamos una cantidad razonable de falsos
 \end{figure}
 
 
-\section{Regresión Logística (Álvaro Santana)}
 \section{Bagging (Ana Fuentes)}
 
 El método \textit{Bagging} (Bootstrap Aggregating) es una técnica de ensemble diseñada para mejorar la precisión y estabilidad de los modelos de aprendizaje supervisado. Bagging combina múltiples modelos base, usualmente árboles de decisión, entrenados independientemente sobre diferentes subconjuntos de datos generados mediante muestreos por reemplazo (bootstrap sampling). El objetivo principal de esta técnica es reducir la varianza de los modelos base al promediar o votar los resultados individuales. Esto produce un modelo final más robusto y también menos propenso al sobreajuste.
@@ -1099,13 +1334,13 @@ Tras haber entrenado y haber obtenido la mejor combinación de los hiperparámet
     \label{tab:confusion-RF}
 \end{table}
 
-Analizando los resultados de estas Tablas, se puede comprobar que hay un mejor equilibrio entre la precisión y el recall. Por otro lado, aunque los resultados son notablemnte buenos, para la clase ``True'' (es anomalía), se hann obtenido peores resultados comparados con los arrojados para la clase ``False'' (no es anomalía), lo que puede explicarse debido al desbalanceo presente entre estas clases (74 frente a 1279).
+Analizando los resultados de estas Tablas, se puede comprobar que hay un mejor equilibrio entre la precisión y el recall. Por otro lado, aunque los resultados son notablemente buenos, para la clase ``True'' (es anomalía), se han obtenido peores resultados comparados con los arrojados para la clase ``False'' (no es anomalía), lo que puede explicarse debido al desbalanceo presente entre estas clases (74 frente a 1279).
 
-Se puede concluir entonces que este modelo es muy buena opción para tratar estos datos debido a la robustez de este ensembble.
+Se puede concluir entonces que este modelo es muy buena opción para tratar estos datos debido a la robustez de este ensemble.
 
 \subsection{ExtraTrees}
 El ensemble ExtraTrees (Extremely Randomized Trees) es similar al algoritmo Random Forest anteriormente descrito, pero introduce más aleatoriedad durante la construcción de los árboles al seleccionar divisiones aleatorias en las características.\\
-En  este caso, los hhiperparámetros que se han estudiado han sido los mismos que para el caso de Random Forest, pero en esta ocasión la aleatoriedad en las divisiones es mayor. Una vez entrenadas las 64 combinaciones posbiles, los mejores parámetros se han reflejado en la Tabla \ref{tab:hiper-ET}.
+En  este caso, los hiperparámetros que se han estudiado han sido los mismos que para el caso de Random Forest, pero en esta ocasión la aleatoriedad en las divisiones es mayor. Una vez entrenadas las 64 combinaciones posibles, los mejores parámetros se han reflejado en la Tabla \ref{tab:hiper-ET}.
 \begin{table}[H]
     \centering
     \begin{tabular}{cccc|c}
