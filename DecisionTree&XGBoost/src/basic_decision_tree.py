@@ -7,46 +7,15 @@ import joblib
 import matplotlib.pyplot as plt
 from scipy.stats import randint
 import polars as pl
-import seaborn as sns
 from sklearn.base import BaseEstimator
 from sklearn.tree import DecisionTreeClassifier, plot_tree
-from utils import build_structure, evaluate, perform_hyperparameter_search
-
-
-def calculate_feature_importance(model: BaseEstimator, X: pl.DataFrame) -> pl.DataFrame:
-    """
-    Calculate feature importance from a trained Decision Tree.
-
-    Args:
-        model (BaseEstimator): Trained pipeline.
-        X (pl.DataFrame): Features used in training.
-
-    Returns:
-        pl.DataFrame: Feature importance sorted in descending order.
-    """
-    feature_names = [col for col in X.columns if col != "fold"]
-    importances = model.feature_importances_
-    importance_df = pl.DataFrame({"feature": feature_names, "importance": importances})
-
-    return importance_df.sort("importance", descending=True)
-
-
-def save_feature_importance_plot(
-    feature_importance: pl.DataFrame, filename: str
-) -> None:
-    """
-    Save a bar plot of the top 10 most important features.
-
-    Args:
-        feature_importance (pl.DataFrame): DataFrame containing feature importance.
-        filename (str): Path to save the plot.
-    """
-    plt.figure(figsize=(10, 6))
-    sns.barplot(data=feature_importance.head(10), x="importance", y="feature")
-    plt.title("Top 10 Most Important Features")
-    plt.tight_layout()
-    plt.savefig(filename)
-    plt.close()
+from utils import (
+    build_structure,
+    evaluate,
+    perform_hyperparameter_search,
+    save_feature_importance_plot,
+    calculate_feature_importance,
+)
 
 
 def save_tree_visualization(

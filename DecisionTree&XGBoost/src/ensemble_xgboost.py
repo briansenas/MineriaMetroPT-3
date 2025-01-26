@@ -4,7 +4,7 @@ from datetime import datetime
 from scipy.stats import randint, uniform
 import joblib
 import polars as pl
-from utils import build_structure, evaluate, perform_hyperparameter_search
+from utils import build_structure, calculate_feature_importance, evaluate, perform_hyperparameter_search, save_feature_importance_plot
 from xgboost.sklearn import XGBClassifier
 
 
@@ -56,6 +56,11 @@ def main():
     # Fit the model with the best parameters
     model.set_params(**best_params)
     model.fit(X_train.drop("fold"), y_train)
+    
+    # Feature importance
+    feature_importance = calculate_feature_importance(model, X_train)
+    save_feature_importance_plot(feature_importance, "img/feature_importance_xgboost.png")
+
 
     # Train evaluation
     train_metrics = evaluate(train_df.drop("fold"), model)
