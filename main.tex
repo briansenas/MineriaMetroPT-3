@@ -557,23 +557,34 @@ Cada una de estas métricas aporta una perspectiva única sobre cómo el modelo 
 Es por ello que en las diferentes experimentaciones se ha hecho uso de esas métricas. La evaluación es el promedio del rendimiento de los modelos en los diferentes pliegues de validación. 
 
 \section{Máquinas de Vectores de Soporte (Ana Fuentes)}
-A continuación, se ha implementado un modelo SVM (Support Vector Machine) para trabajar con los conjuntos de datos de entrenamiento y test. Este modelo es eficaz para problemas de clasificación binaria con relaciones no lineales, especialmente cuando el número de características es elevado, como ocurre en este caso.\\
-Antes de construir este modelo, se han escalado los datasets de entrenamiento y de test aplicando la función \texttt{StandardScaler} para normalizar los datos, lo que es crucial en modelos como SVM, que son sensibles a la magnitud de las características. Seguidamente, se ha implementado la función \texttt{get\_cv\_iterable} para obtener las cuatro separaciones del conjunto de entrenamiento para poder hacer la validación cruzada. Con estos pequeños ajustes, se ha procedido a la configuración del modelo básico de SVM. \\
+A continuación, se ha implementado un modelo SVM (Support Vector Machine) para trabajar con los conjuntos de datos de entrenamiento y test. \\
 
-En primer lugar, se han ajustado los siguientes hiperparámetros:
+El clasificador basado en Máquinas de Soporte Vectorial (SVM) es un potente algoritmo de clasificación supervisada ampliamente utilizado, no sólo en tareas de clasificación, sino también en tareas de regresión. Este algoritmo se basa en la idea de encontrar un hiperplano óptimo que separa las diferentes clases en el espacio de características, maximizando así el margen entre los datos más cercanos de cada clase, (los vectores de soporte). Este enfoque asegura que el modelo generalice bien a nuevos datos.
+
+El modelo SVM destaca principalmente por su capacidad para tratar problemas no lineales mediante el uso de funciones kernel. Estos kernels transforman el espacio original de características en un espacio con mayor dimensionalidad, donde las clases son linealmente separables. Además, hay diversos tipos de funciones kernel, desde lineales a radiales (rbf), entre otras. 
+
+Otro punto a favor de este algoritmo es su alta efectividad en problemas de alta dimensionalidad, como ocurre en el conjunto estudidado. No obstante, el SVM puede ser menos eficiente en datasets con muchas instancias debido al costo computacional asociado. A pesar de esta limitación, SVM sigue siendo una herramienta robusta y versátil con el que se pueden obtener buenos resultados.
+
+\subsection{Preprocesamiento}
+Antes de construir el modelo de SVM, se ha tenido que realizar un pequeño preprocesamiento específico para este algoritmo. En el preprocesamiento general previo, ya se han eliminado los saltos temporales y no hay valores faltantes, por lo que a este respecto no hay que hacer nada. Sin embargo, en las características extraídas hay mucha variabilidad, por lo que es altamente relevante escalar estos valores, debido a la gran sensibilidad del SVM ante la magnitud de las características. De esta manera, se han escalado los datasets de entrenamiento y de test aplicando la función \texttt{StandardScaler} para normalizar estos datos.
+
+\subsection{ Detalles de experimentación y resultados}
+
+Para implementar el algoritmo SVM, se ha utilizado la librería ``\textit{sklearn.svm}'' para poder trabajar con el método de los vectores de soporte. Para conseguir el modelo con mejor rendimiento, se han optimizado tres hiperparámetros: 
+
 \begin{itemize}
-    \item C: este parámetro controla la penalización por errores de clasificación.
-    \item $\gamma$: este define cómo influye una sola muestra en el modelo, lo que resulta relevante para kernels no lineales.
-    \item Kernel: también se elige entre dos tipos de kernel, ``rbf'' o ``linear''.
+    \item C: este parámetro controla la penalización por errores de clasificación. Se elige entre 0.1, 1 y 10.
+    \item $\gamma$: este define cómo influye una sola muestra en el modelo, lo que resulta relevante para kernels no lineales. Se elige entre ``auto'', ``scale'' y 0.1.
+    \item Kernel: también se elige entre dos tipos de kernel, ``rbf'' (radial) o ``linear''.
 \end{itemize}
 
-Tras la inicialización de estos parámetros, se ha utilizado \texttt{GridSearchCV} para realizar una búsqueda exhaustiva de combinaciones de los hiperparámetros y se ha realizado la validación cruzada utilizando los folds predefinidos para evaluar cada combinación. De esta manera, se han probado 72 combinaciones, cuya mejor combinación ha resultado ser la mostrada en la Tabla \ref{tab:hiper-SVM}.
+Para conseguir el mejor modelo, se han entrenado las 72 combinaciones posibles generadas y se ha realizado la validación cruzada, separando en 4 plieques el conjunto de entrenamiento (esto se ha explicado en el apartado \ref{sec:Metricas}). De esta forma, la mejor combinación ha resultado ser la mostrada en la Tabla \ref{tab:hiper-SVM}.
 \begin{table}[H]
     \centering
-    \begin{tabular}{ccc}
+    \begin{tabular}{ccc|c}
      \hline
-     \textbf{C} & $\gamma$ & \textbf{kernel} \\ \hline
-     10 & auto & rbf \\ \hline
+     \textbf{C} & $\gamma$ & \textbf{kernel} & F1 promedio \\ \hline
+     10 & auto & rbf & 0.94196 \\ \hline
     \end{tabular}
     \caption{Mejores hiperparámetros tras entrenar el modelo SVM.}
     \label{tab:hiper-SVM}
@@ -594,7 +605,7 @@ Una vez entrenado y obtenido el mejor modelo (como se pueder observar, se ha obt
     \label{tab:res-SVM}
 \end{table}
 
-Como se puede observar en esta Tabla, se han obtenido unos resultados deprecisión y recall para la clase ``False'' (no es anomalía) excelentes, lo que tiene sentido, al ser la mayoría de los datos no anómalos, ha aprendido mejor el modelo a identificar los valores que no son anomalías.\\
+Como se puede observar en esta Tabla, se han obtenido unos resultados de precisión y recall para la clase ``False'' (no es anomalía) excelentes, lo que tiene sentido, al ser la mayoría de los datos no anómalos, ha aprendido mejor el modelo a identificar los valores que no son anomalías.\\
 Por otro lado, la clase ``True'' (sí es anomalía) presenta un recall más bajo (86\%), lo que indica que 10 anomalías no fueron detectadas como tal.\\
 A pesar de esto, el modelo alcanza un F1-score de 92\% en la clase ``True'', lo que refleja un buen balance entre precisión y recall.
 
