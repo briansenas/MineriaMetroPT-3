@@ -5,6 +5,7 @@ from typing import List
 
 import joblib
 import matplotlib.pyplot as plt
+from scipy.stats import randint
 import polars as pl
 import seaborn as sns
 from sklearn.base import BaseEstimator
@@ -88,9 +89,9 @@ def main():
 
     # Perform hyperparameter tuning
     param_grid = {
-        "max_depth": [2, 3, 5, 7, 10, None],
-        "min_samples_split": [2, 5, 10, 15],
-        "min_samples_leaf": [1, 2, 4, 6],
+        "max_depth": randint(2, 20),
+        "min_samples_split": randint(2, 20),
+        "min_samples_leaf": randint(1, 10),
         "criterion": ["gini", "entropy"],
     }
     best_score, best_params = perform_hyperparameter_search(
