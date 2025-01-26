@@ -895,6 +895,9 @@ Los parámetros principales del algoritmo son:
 \subsection{Características del algoritmo}
 Al ser un algoritmo que se basa en modelos como el anteriormente descrito árbol de decisión, ya que es un algoritmo de \textit{ensemble}, comparte todas las asunciones previas de los datos, es decir, ninguna. No es necesario ni escalar/normalizar, ni transformar datos categóricos (que no los hay). Más allá de la extracción de características previas, que era un proceso independiente de los algoritmos usados, no se ha realizado ningún tipo de preprocesado para \textbf{XGBoost}.
 
+\subsection{Algoritmo de clasificación}
+Se ha usado la versión de \textbf{XGBoost} de la librería \textit{xgboost==2.1.3}.
+
 \subsection{Búsqueda de hiperparámetros}
 Se realiza el mismo proceso que el realizado en el árbol de decisión. Se menciona (por describir todo el trabajo realizado) que se ha probado el uso de un algoritmo de búsqueda de hiperparámetros \textit{bayesiano} mediante la librería \textit{hyperopt}. Por simplicidad, justicia de comparación y coherencia se mantiene el \textit{Random Search} como algoritmo de búsqueda principal.
 
