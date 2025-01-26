@@ -372,34 +372,34 @@ Una serie estacionaria es una secuencia de datos temporales cuyas propiedades es
 Se realizan pruebas estadísticas a las series temporales con el objetivo de determinar si son estacionarias. En este contexto, si el valor crítico de la prueba es mayor que el valor estadístico obtenido, se concluye que la serie no es estacionaria.
 Entre las pruebas utilizadas, destaca la prueba de \textit{Dickey-Fuller Aumentada} (ADF), un test estadístico diseñado para evaluar la presencia de una raíz unitaria en una serie temporal. La existencia de una raíz unitaria indica que la serie no es estacionaria.
 
-Ya que se tienen muchos datos, hacer la prueba de \textit{adfuller} con todos en cada columna no es viable. Por tanto, de manera aleatoria se escogen muestras de tramos aleatorios de cada variable. De esta manera se puede evaluar si la serie es estacionaria en gran parte de sus tramos y deducir si la serie completa es posible que sea estacionaria (veáse la Tabla~\ref{tab:stationary_results}).
-
 \begin{table}[htp]
     \centering
-    \begin{tabular}{lcccc}
-    \hline
-    Variable & Repeticiones & Promedio del test & p-valor promedio & ¿Es estacionaria? \\
-    \hline
-    TP3 & 9/10 & -5.32 & $10^{-4}$ & Sí \\
-    H1 & 10/10 & -6.24 & $10^{-7}$ & Sí \\
-    DV eletric & 8/10 & -5.68 & $10^{-6}$ & Sí \\
-    DV pressure & 9/10 & -21.32 & $10^{-22}$ & Sí \\
-    Caudal impulses & 0/10 & - & - & Valor Contante \\
-    TP2 & 9/10 & -6.29 & $10^{-7}$ & Sí \\
-    Pressure switch & 9/10 & -20.91 & $10^{-13}$ & Sí \\
-    Reservoirs & 10/10 & -5.68 & $10^{-6}$ & Sí \\
-    Towers & 10/10 & -6.81 & $10^{-9}$ & Sí \\
-    LPS & 1/10 & -4.76 & $10^{-5}$ & Parcialmente \\
-    Oil level & 2/10 & -2.59 & $0.1$ & No \\
-    COMP & 10/10 & -5.99 & $10^{-6}$ & Sí \\
-    Motor current & 9/10 & -4.56 & $10^{-4}$ & Sí \\
-    MPG & 9/10 & -6.09 & $10^{-7}$ & Sí \\
-    Oil temperature & 10/10 & -5.28 & $10^{-5}$ & Sí \\
-    \hline
-    \end{tabular}
-    \caption{Tabla de resultados tras $10$ repeticiones en tramos aleatorios}
-    \label{tab:stationary_results}
+    \begin{tabular}{llllll}
+        \hline
+        Feat & Mean Statistic & Std Statistic & Mean p-value & Std p-value & Stationary \\
+        \hline
+        LPS & -4.7913 & -- & 0.0001 & -- & Yes \\
+        Oil\_level & -1.4199 & -- & 0.5727 & -- & No \\
+        TP2 & -6.0272 & 0.3595 & 0.0000 & 0.0000 & Yes \\
+        Motor\_current & -4.5241 & 0.5570 & 0.0006 & 0.0006 & Yes \\
+        Towers & -8.0871 & 2.1996 & 0.0000 & 0.0000 & Yes \\
+        TP3 & -4.7383 & 1.3977 & 0.0475 & 0.1492 & Yes \\
+        COMP & -5.9092 & 0.3207 & 0.0000 & 0.0000 & Yes \\
+        Caudal\_impulses & -12.5275 & -- & 0.0000 & -- & Yes \\
+        DV\_pressure & -22.7337 & 12.0472 & 0.0000 & 0.0000 & Yes \\
+        MPG & -5.8787 & 0.2662 & 0.0000 & 0.0000 & Yes \\
+        DV\_eletric & -5.9815 & 1.0184 & 0.0000 & 0.0001 & Yes \\
+        H1 & -5.8030 & 0.3944 & 0.0000 & 0.0000 & Yes \\
+        Reservoirs & -4.7148 & 0.7602 & 0.0006 & 0.0008 & Yes \\
+        Oil\_temperature & -5.0249 & 0.9065 & 0.0009 & 0.0022 & Yes \\
+        Pressure\_switch & -24.7790 & 11.1539 & 0.0000 & 0.0000 & Yes \\
+        \hline
+        \end{tabular}
+        \caption{Estadísticos medios de los test de estacionalidad tras diez experimentos.}
+        \label{tab:stationary_results}
 \end{table}
+
+Ya que se tienen muchos datos, hacer la prueba de \textit{adfuller} con todos en cada columna no es viable. Por tanto, de manera aleatoria se escogen muestras de tramos aleatorios de cada variable. De esta manera se puede evaluar si la serie es estacionaria en gran parte de sus tramos y deducir si la serie completa es posible que sea estacionaria (veáse la Tabla~\ref{tab:stationary_results}).
 
 
 \subsection{Preprocesamiento}
@@ -702,6 +702,117 @@ Observamos un comportamiento similar en la evaluación final (derecha). }
 
 
 \section{Árboles de clasificación (Miguel García)}
+\subsection{Contexto}
+Los árboles de decisión, ya sean para regresión o clasificación, son un tipo de algoritmo de aprendizaje automático que representa la toma de decisiones como un árbol hasta llegar a la clase o etiqueta correspondiente al \textit{input} dado (en el caso de clasificación).
+
+\begin{itemize}
+    \item Los nodos \textbf{decisión}, que representan una condición sobre las variables. Es una forma de dividir los datos.
+    \item Los nodos \textbf{hoja}, que representan la etiqueta o categoría final.
+\end{itemize}
+
+La intuición básica detrás del algoritmo es la de intentar obtener los nodos de decisión más puros posibles (maximizar), esto es, los que sean más discriminadores entre clases o los que aporten más información.
+
+\subsection{Parámetros}
+El principal parámetro que ha de escogerse para crear un árbol de decisión es el de la función de pérdida. Existen varias, pero las más usadas son la función de \textbf{Entropía} y la función de \textbf{Gini}.
+
+La función de entropía es la siguiente:
+
+\begin{equation}
+    Entropy=\sum_{i}^{N}-p_{i}log(p_{i})
+\end{equation}
+
+Donde $p_i$ es la probabilidad de la clase $i$. El valor más alto de entropía es $1$ que significa máxima impureza y el más bajo $0$, que es la mayor pureza (o división perfecta).
+
+La función de \textit{Gini} es:
+
+\begin{equation}
+    I_G(p)=\sum_{i=1}^J(p_i\sum_{k\neq i}^J(1-p_i))=1-\sum_{i=1}^{J}p_{i}^2
+\end{equation}
+
+Normalmente \textit{Gini} es más utilizado por su eficiencia, pero ambas funciones son válidas y rápidas.
+
+Otros parámetros a tener en cuenta para definir el árbol de decisión son:
+
+\begin{itemize}
+    \item \textbf{max\_depth}: Profundidad máxima del árbol. Limita el crecimiento para evitar sobreajuste.
+    \item \textbf{min\_samples\_split}: Mínimo de muestras para dividir un nodo. Evita divisiones no significativas.
+    \item \textbf{min\_samples\_leaf}: Mínimo de muestras en una hoja. Garantiza predicciones confiables.
+    \item \textbf{max\_features}: Número máximo de características consideradas en cada división. Reduce sobreajuste y acelera entrenamiento.
+\end{itemize}
+
+\subsection{Características del algoritmo}
+Los árboles son un tipo de algoritmo sencillo en cuanto a preprocesamiento se refiere. Estos son capaces de lidiar con datos nulos, categóricos y numéricos sin necesidad de transformarlos. No es necesaria la normalización o estandarizado, ya que los árboles de decisión son invariantes en escala porque las separaciones lineales que buscan tratan de maximizar la homogeneidad entre clases considerando una variable a la vez, por lo que se anula el posible efecto que tendría una correlación con otra variable de diferente escala.
+
+No son todo ventajas, ya que los árboles de decisión son un tipo de algoritmo que tiene una varianza muy alta, por lo que cualquier cambio en los datos o parámetros pueden dar resultado a modelos muy distintos.
+
+Tampoco asumen distribuciones especiales sobre los datos (más allá de que son separables, aunque se puede establecer un criterio de parada), por lo que son perfectamente aplicables a características no normales o con otro tipo de distribuciones.
+
+\subsection{Algoritmo de clasificación}
+Se ha utilizado la versión de \textit{scikit-learn==1.5.2}. Dentro de esta librería se ha escogido el clasificador \textit{DecisionTreeClassifier}. 
+
+Se escoge por defecto el modo \textbf{``balanced''}, que utiliza los valores de $y$ para ajustar automáticamente los pesos de manera inversamente proporcional a las frecuencias de las clases en los datos de entrada. Esto se calcula como:
+
+\begin{equation}
+    weights = \frac{n\_samples}{n\_classes \cdot np.bincount(y)}
+\end{equation}
+
+Donde:
+\begin{itemize}
+    \item \( \textbf{n\_samples} \): Número total de muestras.
+    \item \( \textbf{n\_classes} \): Número de clases únicas en \( y \).
+    \item \( \textbf{np.bincount}(y) \): Cuenta el número de ocurrencias de cada clase en \( y \).
+\end{itemize}
+
+Este enfoque ayuda a manejar desequilibrios en las clases, ya que el problema que se trata de resolver es una clasificación de anomalías, con un alto grado de desbalance. Así se asignan mayores pesos a las clases minoritarias y menores pesos a las clases mayoritarias.
+
+\subsection{Búsqueda de hiperparámetros}
+Se realiza una búsqueda de hiperparámetros sobre las variables de \textit{max\_depth, min\_samples\_split, min\_samples\_leaf} y \textit{criterion}. Todas estos hiperparámetros han sido explicados en la subsección anterior.
+
+Se utiliza el algoritmo de \textit{Random Search} de \textit{scikit-learn} buscando maximizar la métrica de precisión.
+
+\begin{figure}[htp]
+    \centering
+    \subfloat{\includegraphics[width=0.7\textwidth]{random_vs_grid.png}}
+    \caption{Visualización de \textit{Grid Search vs Random Search}.}
+    \label{fig:grid_vs_rando}
+\end{figure}
+
+Se ha escogido el algoritmo de búsqueda de \textit{Random Search} en vez de \textit{Grid Search} ya que este es capaz de encontrar valores muy intersantes dado un espacio de búsqueda. En \textit{Grid Search} se ha de definir los valores que se deben probar, por lo que es posible perder ciertos tipos de combinaciones muy interesantes.
+
+Estudios empíricos han demostrado que \textit{Random Search} tiende a encontrar combinaciones de hiperparámetros óptimas o cercanas a óptimas con menos iteraciones que \textit{Grid Search}. Esto se debe a que, en muchos casos, no todos los hiperparámetros son igualmente importantes, y \textit{Random Search} explora de manera más efectiva las regiones más relevantes del espacio de búsqueda.
+
+La \textbf{precisión} es una métrica de evaluación de modelos de clasificación que mide la proporción de predicciones positivas que son correctas. Se define como:
+
+\begin{equation}
+    precision = \frac{True Positives (TP)}{True Positives (TP) + False Positives (FP)}
+\end{equation}
+
+Donde:
+\begin{itemize}
+    \item \textbf{True Positives (TP)}: Son los casos en los que el modelo predice correctamente la clase positiva.
+    \item \textbf{False Positives (FP)}: Son los casos en los que el modelo predice incorrectamente la clase positiva (falsos positivos).
+\end{itemize}
+
+La precisión es especialmente útil en problemas donde los \textbf{true positives} son críticos y los \textbf{false positives} tienen un costo asociado. En este caso, captar anomalías es un ejemplo donde los \textbf{TP} son esenciales y los \textbf{FP} pueden tener un costo, ya que detectar una falsa anomalía en este caso puede llevar a la toma de decisiones como revisiones asociadas a un mal gasto.
+
+\begin{table}
+    \centering
+    \begin{tabular}{ll}
+        \hline
+        \textbf{Parámetro} & \textbf{Valor} \\ \hline
+        criterion & entropy \\ 
+        max\_depth & 15 \\ 
+        min\_samples\_leaf & 2 \\ 
+        min\_samples\_split & 17 \\ \hline
+    \end{tabular}
+    \caption{Mejores parámetros encontrados para el árbol de decisión.}
+    \label{tab:hyper_param_decision_tree}
+\end{table}
+
+Se pueden observar los mejores parámetros encontrados para el árbol de decisión en la tabla \ref{tab:hyper_param_decision_tree}. Hay que tener en cuenta que los árboles son muy variantes, como se ha explicado anteriormente, por lo que cada ejecución puede variar significativamente de parámetros, sobre todo si se usa \textit{Random Search} y sin semilla para la reproducibilidad. Los experimentos lanzados dan, pese a la variabilidad, resultados muy similares.
+
+\subsection{Resultados}
+
 \section{Gradient Boosting (Miguel García)}
 \section{Stacking (Brian Sena)}
 El \textit{Stacking} (apilamiento) es una técnica de aprendizaje automático que combina las predicciones de múltiples modelos base para construir un modelo final más robusto y preciso. 
