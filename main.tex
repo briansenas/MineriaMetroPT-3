@@ -781,7 +781,7 @@ Se ha escogido el algoritmo de búsqueda de \textit{Random Search} en vez de \te
 
 Estudios empíricos han demostrado que \textit{Random Search} tiende a encontrar combinaciones de hiperparámetros óptimas o cercanas a óptimas con menos iteraciones que \textit{Grid Search}. Esto se debe a que, en muchos casos, no todos los hiperparámetros son igualmente importantes, y \textit{Random Search} explora de manera más efectiva las regiones más relevantes del espacio de búsqueda.
 
-La \textbf{precisión} es una métrica de evaluación de modelos de clasificación que mide la proporción de predicciones positivas que son correctas. Se define como:
+La \textbf{precisión} es una métrica de evaluación de modelos de clasificación que mide la proporción de predicciones positivas que son correctas, tal y como se explica en el apartado de métricas del principio de la documentación. Se define como:
 
 \begin{equation}
     precision = \frac{True Positives (TP)}{True Positives (TP) + False Positives (FP)}
@@ -818,21 +818,6 @@ Se pueden observar los mejores parámetros encontrados para el árbol de decisi�
     \begin{tabular}{lcccc}
         \hline
         & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\ \hline
-        False & 0.9976 & 0.9945 & 0.9961 & 1279 \\
-        True & 0.9103 & 0.9595 & 0.9342 & 74 \\ \hline
-        Accuracy & \multicolumn{4}{c}{0.9926} \\
-        Macro Avg & 0.9540 & 0.9770 & 0.9651 & 1353 \\
-        Weighted Avg & 0.9929 & 0.9926 & 0.9927 & 1353 \\ \hline
-    \end{tabular}
-    \caption{Reporte de resultados en \textit{test}.}
-    \label{tab:results_decision_tree_test}
-\end{table}
-
-\begin{table}[htp]
-    \centering
-    \begin{tabular}{lcccc}
-        \hline
-        & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\ \hline
         False & 1.0000 & 0.9960 & 0.9980 & 4445 \\
         True & 0.9234 & 1.0000 & 0.9602 & 217 \\ \hline
         Accuracy & \multicolumn{4}{c}{0.9961} \\
@@ -841,6 +826,21 @@ Se pueden observar los mejores parámetros encontrados para el árbol de decisi�
     \end{tabular}
     \caption{Reporte de resultados en \textit{training}.}
     \label{tab:results_decision_tree_training}
+\end{table}
+
+\begin{table}[htp]
+    \centering
+    \begin{tabular}{lcccc}
+        \hline
+        & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\ \hline
+        False & 0.9976 & 0.9945 & 0.9961 & 1279 \\
+        True & 0.9103 & 0.9595 & 0.9342 & 74 \\ \hline
+        Accuracy & \multicolumn{4}{c}{0.9926} \\
+        Macro Avg & 0.9540 & 0.9770 & 0.9651 & 1353 \\
+        Weighted Avg & 0.9929 & 0.9926 & 0.9927 & 1353 \\ \hline
+    \end{tabular}
+    \caption{Reporte de resultados en \textit{test}.}
+    \label{tab:results_decision_tree_test}
 \end{table}
 
 \begin{figure}[htp]
@@ -873,6 +873,103 @@ Una característica importante y muy relevante de los árboles de decisión es q
 Por visualización, también es posible extraer las reglas que constituyen el motor de inferencia de los árboles. El árbol extraído se puede analizar en la figura \ref{fig:decision_tree}
 
 \section{Gradient Boosting (Miguel García)}
+\subsection{Contexto}
+Se ha escogido el algoritmo de \textbf{XGBoost} como algoritmo de \textit{ensemble} con técnicas de \textit{gradient boosting}. 
+
+El \textit{gradient boosting} es una técnica de aprendizaje automático que se utiliza para problemas de regresión y clasificación. Consiste en construir un modelo de predicción en forma de un conjunto de modelos débiles, típicamente árboles de decisión, de manera secuencial. Cada nuevo modelo intenta corregir los errores cometidos por los modelos anteriores, optimizando una función de pérdida.
+
+\textbf{XGBoost} (eXtreme Gradient Boosting) es una implementación optimizada y eficiente de \textit{gradient boosting} que incluye regularización para evitar el sobreajuste.
+
+\subsection{Parámetros}
+Los parámetros principales del algoritmo son:
+\begin{itemize}
+    \item \textbf{n\_estimators}: Número de árboles en el conjunto.
+    \item \textbf{max\_depth}: Profundidad máxima de los árboles individuales. 
+    \item \textbf{learning\_rate}: Tasa de aprendizaje.
+    \item \textbf{subsample}: Fracción de datos de entrenamiento usados en cada árbol.
+    \item \textbf{colsample\_bytree}: Fracción de características usadas para cada árbol. 
+    \item \textbf{gamma}: Reducción mínima de pérdida requerida para hacer una partición adicional en un nodo hoja.
+    \item \textbf{min\_child\_weight}: Suma mínima de pesos de instancia necesarios en un hijo.
+\end{itemize}
+
+\subsection{Características del algoritmo}
+Al ser un algoritmo que se basa en modelos como el anteriormente descrito árbol de decisión, ya que es un algoritmo de \textit{ensemble}, comparte todas las asunciones previas de los datos, es decir, ninguna. No es necesario ni escalar/normalizar, ni transformar datos categóricos (que no los hay). Más allá de la extracción de características previas, que era un proceso independiente de los algoritmos usados, no se ha realizado ningún tipo de preprocesado para \textbf{XGBoost}.
+
+\subsection{Búsqueda de hiperparámetros}
+Se realiza el mismo proceso que el realizado en el árbol de decisión. Se menciona (por describir todo el trabajo realizado) que se ha probado el uso de un algoritmo de búsqueda de hiperparámetros \textit{bayesiano} mediante la librería \textit{hyperopt}. Por simplicidad, justicia de comparación y coherencia se mantiene el \textit{Random Search} como algoritmo de búsqueda principal.
+
+\begin{table}[htp]
+    \centering
+    \begin{tabular}{ll}
+    \hline
+    \textbf{Parámetro} & \textbf{Valor} \\ \hline
+    colsample\_bytree & 0.8778 \\
+    gamma & 1.5361 \\
+    learning\_rate & 0.2528 \\
+    max\_depth & 4 \\
+    min\_child\_weight & 2 \\
+    n\_estimators & 448 \\
+    subsample & 0.5743 \\ \hline
+    \end{tabular}
+    \caption{Mejores parámetros encontrados para el modelo \textbf{XGBoost}.}
+    \label{tab:hyper_param_xgboost}
+\end{table}
+
+Los resultados obtenidos son los descritos en la tabla \ref{tab:hyper_param_xgboost}.
+
+\subsection{Resultados}
+\begin{table}[htp]
+    \centering
+    \begin{tabular}{lcccc}
+    \hline
+    & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\ \hline
+    False & 0.9996 & 0.9996 & 0.9996 & 4445 \\
+    True & 0.9908 & 0.9908 & 0.9908 & 217 \\ \hline
+    Accuracy & \multicolumn{4}{c}{0.9991} \\
+    Macro Avg & 0.9952 & 0.9952 & 0.9952 & 4662 \\
+    Weighted Avg & 0.9991 & 0.9991 & 0.9991 & 4662 \\ \hline
+    \end{tabular}
+    \caption{Reporte de resultados en \textit{training} de \textbf{XGBoost}.}
+    \label{tab:results_training_xg}
+\end{table}
+    
+\begin{table}[htp]
+    \centering
+    \begin{tabular}{lcccc}
+    \hline
+    & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\ \hline
+    False & 0.9969 & 0.9977 & 0.9973 & 1279 \\
+    True & 0.9589 & 0.9459 & 0.9524 & 74 \\ \hline
+    Accuracy & \multicolumn{4}{c}{0.9948} \\
+    Macro Avg & 0.9779 & 0.9718 & 0.9748 & 1353 \\
+    Weighted Avg & 0.9948 & 0.9948 & 0.9948 & 1353 \\ \hline
+    \end{tabular}
+    \caption{Reporte de resultados en \textit{test} de \textbf{XGBoost}.}
+    \label{tab:results_test_xg}
+\end{table}
+
+Los resultados mostrados en las tablas \ref{tab:results_training_xg} y \ref{tab:results_decision_tree_test} mejoran bastante las métricas obtenidas por solo un árbol de decisión. Los resultados de precisión de \textit{test} mejoran en un $4\%$. Dentro de que los resultados ya eran excelentes, \textbf{XGBoost} los mejora incluso más.
+
+\begin{figure}[htp]
+    \centering
+    \subfloat{\includegraphics[width=0.9\textwidth]{feature_importance_xgboost.png}}
+    \caption{Visualización de importancia de cada característica dado el modelo de \textbf{XGBoost}.}
+    \label{fig:feature_importance_xg}
+\end{figure}
+
+\begin{figure}[htp]
+    \centering
+    \subfloat{\includegraphics[width=0.5\textwidth]
+    {test_xgboost_confusion_matrix_decision_tree.png}}
+    \subfloat{\includegraphics[width=0.5\textwidth]{xgboost_confusion_matrix_decision_tree.png}}
+    \caption{Matriz de confusión de los resultados obtenidos en \textbf{XGBoost}.}
+    \label{fig:cm_decision_tree_xg}
+\end{figure}
+
+Al igual que en el árbol de decisión singular, con este método también es posible obtener una gráfica que muestre la importancia de las variables. En la figura \ref{fig:feature_importance_xg} se muestra como las variables de importancia cambian con respecto al árbol de decisión. El top $k$ sigue siendo parecido, aparecen algunas de las mismas variables en ambos gráficos, pero se reordenan y se le dan a las variables un porcentaje más distribuido de importancia.
+
+Se muestran las gráficas de matriz de confusión en la figura \ref{fig:cm_decision_tree_xg}.
+
 \section{Stacking (Brian Sena)}
 El \textit{Stacking} (apilamiento) es una técnica de aprendizaje automático que combina las predicciones de múltiples modelos base para construir un modelo final más robusto y preciso. 
 A diferencia de otros métodos de ensamblado, en el \textit{Stacking} se utiliza un modelo de nivel superior, conocido como meta-modelo, que aprende a combinar las predicciones de los modelos base.
@@ -900,7 +997,7 @@ Para el modelo de soporte vectorial se buscarán los valores de regularización 
 Para el árbol de decisión se ha experimentado tanto con criterio de corte (ct) de ``gini'' y ``entropía''. También se estudia profundidad ilimitada frente a máxima profundidad equivalente a 10.
 Los resultados se recogen en la Tabla~\ref{tab:StackingResults} y la matriz de confusión de entrenamiento en la Figura~\ref{fig:StackingMatrix}.
 
-\begin{table}[!ht]
+\begin{table}[htp]
     \centering
     \begin{tabular}{llc}
         \hline
@@ -918,7 +1015,7 @@ Los resultados se recogen en la Tabla~\ref{tab:StackingResults} y la matriz de c
 Los resultados del mejor modelo sobre el conjunto final de evaluación se recogen en la Tabla~\ref{tab:StackingFinalResults} y su matriz de confusión en la Figura~\ref{fig:StackingMatrix}.
 Utilizar este conjunto de modelos y un meta-modelo para modelar la iteracción entre ellos resulta ser muy eficaz para la resolución de este problema.
 
-\begin{table}[!ht]
+\begin{table}[htp]
     \centering
     \begin{tabular}{lcccc}
         \hline
@@ -930,7 +1027,7 @@ Utilizar este conjunto de modelos y un meta-modelo para modelar la iteracción e
     \label{tab:StackingFinalResults}
 \end{table}
 
-\begin{figure}[!ht]
+\begin{figure}[htp]
 \centering
 \subfloat{\includegraphics[width=0.4\textwidth]{StackingMatrix}}
 \subfloat{\includegraphics[width=0.4\textwidth]{StackingMatrixResults}}
